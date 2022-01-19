@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="index.css">
+    <title>Register</title>
+  </head>
+  <body>
+    <a class="home-btn" href="home.html">
+      <img src="image/logokien-signup.8641c4b2.png" style="width: 60px; height: 60px;">
+    </a>
+    <h1 class="title">Register your account</h1>
+    <form class="form" name="form" method="POST">
+      <div>
+        <label for="email" style="margin-right:37px">Email:</label>
+        <input type="email" required name="email" id="email" placeholder="Input your email"><br>
+      </div>
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" required name="username" id="username" placeholder="Input your username"><br>
+      </div>
+      <div>
+        <label for="name">Full-name:</label>
+        <input type="text" required name="name" id="name" placeholder="Input your full-name"><br>
+      </div>
+      <div>
+        <label for="password" style="margin-right:5px">Password:</label>
+        <input type="password" required name="password" id="password" placeholder="Input your password">
+      </div><br>
+      <button id="registerSubmit" type="submit">Register</button>
+    </form><br><br>
+    <div id="message"></div>
+    <script>
+      const {ipcRenderer, remote}= require("electron");
+      const net = remote.net;
+      document.getElementById("registerSubmit").addEventListener("click",function(e){
+        e.preventDefault();
+        var body = JSON.stringify({
+          username: document.forms['form']['username'].value,
+          password: document.forms['form']['password'].value,
+          mail: document.forms['form']['email'].value,
+          name: document.forms['form']['name'].value
+        })
+        const request = net.request({
+          method:"POST",
+          url:"http://localhost:4000/backend/users/register",
+          redirect:"follow"
+        })
+        request.on('response', (response) => { 
+          console.log(`STATUS: ${response.statusCode}`); 
+          console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+          response.on('data', (chunk) => { 
+            console.log(`BODY: ${chunk}`)
+            var data=JSON.parse(chunk);
+            if (response.statusCode==200){
+              document.getElementById("message").innerHTML=`<h2 class="message-success">Đăng kí thành công!!!</h2>`
+            }
+            else {
+              document.getElementById("message").innerHTML=`<h2 class="message-error">Đăng kí thất bại!!! Lỗi: ${data.message}</h2>`
+            }
+          }); 
+        }); 
+        request.on('finish', () => { 
+          console.log('Request is Finished') 
+        }); 
+        request.on('abort', () => { 
+          console.log('Request is Aborted') 
+        }); 
+        request.on('error', (error) => { 
+          console.log(`ERROR: ${JSON.stringify(error)}`)
+          document.getElementById("message").innerHTML=`<h2 class="message-error">Đăng kí thất bại!!!</h2>`;
+        }); 
+        request.on('close', (error) => { 
+          console.log('Last Transaction has occured') 
+        }); 
+        request.setHeader('Content-Type', 'application/json'); 
+        request.write(body, 'utf-8'); 
+        request.end(); 
+      })
+    </script>
+  </body>
+</html>

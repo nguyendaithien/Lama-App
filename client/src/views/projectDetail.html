@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title></title>
+</head>
+<body>
+    <a class="home-btn" href="login.html">
+        <img src="image/logokien-signup.8641c4b2.png" style="width: 60px; height: 60px;">
+    </a>
+    <div id="deleteAll">
+        <h1 class="title"></h1>
+        <div id="projectDetail"></div>
+        <h2 class="title">Components List</h2>
+        <div id=componentsList></div>
+        <h3 class="title">Upload component list</h3>
+        <form name="uploadForm" method="POST" enctype="multipart/form-data">
+            <label for="componentsFile">Select an excel file:</label>
+            <input type="file" id="componentsFile" name="componentsFile"><br>
+            <input type="submit" id="uploadFile">
+        </form>
+        <div id="message1"></div>
+    </div>
+    <script>
+        const {ipcRenderer, remote} = require("electron");
+        const session = remote.session;
+            session.defaultSession.cookies.get({})
+            .then((cookies)=>{
+                var tokenValue = "Bearer "+cookies[0].value;
+        ipcRenderer.on("detail",function(event,data){
+            data.expected_start_time1 = new Date(data.expected_start_time);
+            data.expected_finish_time1 = new Date(data.expected_finish_time);
+            data.real_start_time1 = new Date(data.real_start_time);
+            data.real_finish_time1 = new Date(data.real_finish_time);
+            data.created_at1 = new Date(data.created_at);
+            document.getElementsByTagName("h1")[0].innerHTML=`Project ${data.title}`;
+            document.getElementsByTagName("title")[0].innerHTML=`Project ${data.title}`;
+            document.getElementById("projectDetail").innerHTML=`
+            <table>
+                <tr>
+                    <th style="font-weight: bold;">Project ID</th>
+                    <th style="font-weight: bold;">Title</th> 
+                    <th style="font-weight: bold;">Description</th>
+                    <th style="font-weight: bold;">Income</th>
+                    <th style="font-weight: bold;">Total Cost</th>
+                    <th style="font-weight: bold;">EST-EFT</th>
+                    <th style="font-weight: bold;">RST-RFT</th>
+                    <th style="font-weight: bold;">Created</th>
+                    <th style="font-weight: bold;">Note</th>
+                    <th style="font-weight: bold;">Action</th>
+                </tr>
+                <tr>
+                    <th>${data.id}</th>
+                    <th>${data.title}</th> 
+                    <th>${data.description}</th>
+                    <th>${data.income}</th>
+                    <th>${data.total_cost}</th>
+                    <th>${data.expected_start_time1} to ${data.expected_finish_time1}</th>
+                    <th>${data.real_start_time1} to ${data.real_finish_time1}</th>
+                    <th>${data.created_at1}</th>
+                    <th>${data.note}</th>
+                    <th><button type="button" id="edit-btn"><i class="fa fa-pencil" style="font-size:19px; color: dodgerblue;"></i></button><button type="button" id="delete-btn" style="margin-top: 5px;"><i class="fa fa-trash" style="font-size:20px; color:dodgerblue;"></i></button></th>
+                </tr>
+            </table>
+            `;
+            //Get list electronic components
+            function listElectronicComponents(){
+                const request0 = remote.net.request({
+                    method:"GET",
+                    url:`http://localhost:4000/backend/electronic-components/list?project_id=${data.id}`,
+                    redirect:"follow"
+                })
+                request0.setHeader("Authorization",tokenValue);
+                request0.on('response', (response) => {
+                    console.log(`STATUS: ${response.statusCode}`); 
+                    console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                    response.on('data', (chunk) => {
+                        var componentsList = JSON.parse(chunk);
+                        document.getElementById("componentsList").innerHTML=`
+                        <table id="componentsTable">
+                                <tr>
+                                    <th style="font-weight: bold;">Name</th>
+                                    <th style="font-weight: bold;">Price</th>
+                                    <th style="font-weight: bold;">Amount</th>
+                                    <th style="font-weight: bold;">Total cost</th>
+                                </tr>
+                        </table>
+                        `
+                        let i;
+                        for (i=0;i<componentsList.length;i++){
+                            document.getElementById("componentsTable").innerHTML+=`
+                                <tr>
+                                    <th>${componentsList[i].name}</th>
+                                    <th>${componentsList[i].price}</th>
+                                    <th>${componentsList[i].amount}</th>
+                                    <th>${componentsList[i].total_cost}</th>
+                                </tr>
+                            `;
+                        }
+                    });
+                });
+                request0.on('finish', () => { 
+                    console.log('Request is Finished') 
+                }); 
+                request0.on('abort', () => { 
+                    console.log('Request is Aborted') 
+                }); 
+                request0.on('error', (error) => { 
+                    console.log(`ERROR: ${JSON.stringify(error)}`)
+                }); 
+                request0.on('close', (error) => { 
+                    console.log('Last Transaction has occured') 
+                }); 
+                request0.setHeader('Content-Type', 'application/json'); 
+                request0.end();
+            }
+            listElectronicComponents();
+            //Delete project button
+                document.getElementById("delete-btn").addEventListener("click",function(){
+                    const request1 = remote.net.request({
+                        method:"DELETE",
+                        url:`http://localhost:4000/backend/projects/delete/${data.id}`,
+                        redirect:"follow"
+                    })
+                    request1.setHeader("Authorization",tokenValue);
+                    request1.on('response', (response) => { 
+                        console.log(`STATUS: ${response.statusCode}`); 
+                        if (response.statusCode==200){
+                            document.getElementById("deleteAll").innerHTML=`<p class="message-success">Xóa thành công!!!</p>`;
+                        }
+                        console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                        response.on('data', (chunk) => { 
+                            console.log(`BODY: ${chunk}`);
+                        }); 
+                    }); 
+                    request1.on('finish', () => { 
+                        console.log('Request is Finished') 
+                    }); 
+                    request1.on('abort', () => { 
+                        console.log('Request is Aborted') 
+                    }); 
+                    request1.on('error', (error) => { 
+                        console.log(`ERROR: ${JSON.stringify(error)}`);
+                        document.getElementById("projectDetail").innerHTML+=`<p class="message-error">Xóa thất bại!!!</p>`;
+                    }); 
+                    request1.on('close', (error) => { 
+                        console.log('Last Transaction has occured') 
+                    }); 
+                    request1.setHeader('Content-Type', 'application/json'); 
+                    request1.end();
+                })
+                //Edit Project button
+                let est = data.expected_start_time1;
+                est = est.getFullYear()+"-"+((est.getMonth()+1)<10?('0'+(est.getMonth()+1)):(est.getMonth()+1))+"-"+((est.getMonth()+1)<10?('0'+(est.getMonth()+1)):(est.getMonth()+1));
+                let eft = data.expected_finish_time1;
+                eft =eft.getFullYear()+"-"+((eft.getMonth()+1)<10?('0'+(eft.getMonth()+1)):(eft.getMonth()+1))+"-"+((eft.getMonth()+1)<10?('0'+(eft.getMonth()+1)):(eft.getMonth()+1));
+                let rst = data.real_start_time1;
+                rst =rst.getFullYear()+"-"+((rst.getMonth()+1)<10?('0'+(rst.getMonth()+1)):(rst.getMonth()+1))+"-"+((rst.getMonth()+1)<10?('0'+(rst.getMonth()+1)):(rst.getMonth()+1))
+                let rft = data.real_finish_time1;
+                rft =rft.getFullYear()+"-"+((rft.getMonth()+1)<10?('0'+(rft.getMonth()+1)):(rft.getMonth()+1))+"-"+((rft.getMonth()+1)<10?('0'+(rft.getMonth()+1)):(rft.getMonth()+1));
+                document.getElementById("edit-btn").addEventListener("click",function(){
+                    let memberCount=0;
+                    document.getElementsByTagName("body")[0].innerHTML+=`
+                    <h1 class="title">Edit Project</h1>
+                        <form name="editForm" method="GET">
+                            <label for="projectTitle" style="margin-right: 118px">Project Title:</label>
+                            <input type="text" name="projectTitle" id="projectTitle" value="${data.title}" placeholder="Insert Project title"><br>
+                            <label for="projectDescription" style="margin-right: 67px">Project Description:</label>
+                            <input type="text" name="projectDescription" id="projectDescription" value="${data.description}" placeholder="Insert Project description"><br>
+                            <label for="projectIncome" style="margin-right: 95px">Project Income:</label>
+                            <input type="number" name="projectIncome" id="projectIncome" value="${data.income}" placeholder="Insert Project income"><br>
+                            <label for="projectEST" style="margin-right: 6.5px">Project estimated start time:</label>
+                            <input type="date" name="projectEST" id="projectEST" value="${est}" placeholder="Insert Project estimated start time"><br>
+                            <label for="projectEFT" >Project estimated finish time:</label>
+                            <input type="date" name="projectEFT" id="projectEFT" value="${eft}" placeholder="Insert Project estimated finish time"><br>
+                            <label for="projectRST" style="margin-right: 50px">Project real start time:</label>
+                            <input type="date" name="projectRST" id="projectRST" value="${rst}" placeholder="Insert Project real start time"><br>
+                            <label for="projectRFT" style="margin-right: 44px">Project real finish time:</label>
+                            <input type="date" name="projectRFT" id="projectRFT" value="${rft}" placeholder="Insert Project real finish time"><br>
+                            <label for="projectNote" style="margin-right: 112.5px">Project Note:</label>
+                            <input type="text" name="projectNote" id="projectNote" value="${data.note}" placeholder="Insert Project note"><br>
+                            <label for="projectServerCost" style="margin-right: 68px">Project Server Cost:</label>
+                            <input type="number" name="projectServerCost" id="projectServerCost" value="${data.cost.server_cost}" placeholder="Insert Project server cost"><br>
+                            <label for="projectIncurredCost" style="margin-right: 53px">Project Incurred Cost:</label>
+                            <input type="number" name="projectIncurredCost" id="projectIncurredCost" value="${data.cost.incurred_cost}" placeholder="Insert Project incurred cost"><br>
+                            <label for="projectMember" style="margin-right: 15px">Add Member:</label>
+                            <input id="projectMember" type="submit" value="+"><br>
+                                <div id="memberList"></div>
+                            <input id="projectEdit" type="submit" value="Submit">
+                        </form>
+                        <div id="message"></div>
+                    `;
+                    
+                    document.getElementById("projectMember").addEventListener("click",function(event){
+                        event.preventDefault();
+                        memberCount++;
+                        document.getElementById("memberList").innerHTML+=`
+                            <label for="member${memberCount}Username" style="margin-right: 15px">Member ${memberCount} username:</label>
+                            <input type="text" name="member${memberCount}Username" id="member${memberCount}Username" placeholder="Insert Member ${memberCount} username">
+                            <label for="member${memberCount}Pay" style="margin-right: 15px">Member ${memberCount} pay:</label>
+                            <input type="number" name="member${memberCount}Pay" id="member${memberCount}Pay" placeholder="Insert Member ${memberCount} pay"><br>
+                        `
+                    })
+                    //Edit project
+                    document.getElementById("projectEdit").addEventListener("click",function(e){
+                        e.preventDefault();
+                        var memberArray=[];
+                        let j;
+                        for (j=0;j<memberCount;j++) {
+                            var pay = parseInt(document.getElementById(`member${j+1}Pay`).value);
+                            memberArray[j] = {
+                                username:document.getElementById(`member${j+1}Username`).value,
+                                pay:pay
+                            }
+                        }
+                        var title = document.forms['editForm']['projectTitle'].value;
+                        var description =document.forms['editForm']['projectDescription'].value;
+                        var income = document.forms['editForm']['projectIncome'].value;
+                        var expected_start_time = document.forms['editForm']['projectEST'].value;
+                        var expected_finish_time = document.forms['editForm']['projectEFT'].value;
+                        var real_start_time = document.forms['editForm']['projectRST'].value;
+                        var real_finish_time = document.forms['editForm']['projectRFT'].value;
+                        var note = document.forms['editForm']['projectNote'].value;
+                        var server = document.forms['editForm']['projectServerCost'].value;
+                        var cost_incurred = document.forms['editForm']['projectIncurredCost'].value;
+                        var member = memberArray;
+                        income = parseInt(income);
+                        server = parseInt(server);
+                        cost_incurred = parseInt(cost_incurred);
+                        var editProjectDetail = {
+                            title:title,
+                            description:description,
+                            income:income,
+                            expected_start_time:expected_start_time,
+                            expected_finish_time:expected_finish_time,
+                            real_start_time:real_start_time,
+                            real_finish_time:real_finish_time,
+                            note:note,
+                            member: member,
+                            cost: {
+                                server:server,
+                                cost_incurred:cost_incurred
+                            }
+                        }
+                        var body=JSON.stringify(editProjectDetail);
+                        const request = remote.net.request({
+                            method:"PUT",
+                            url:`http://localhost:4000/backend/projects/edit/${data.id}`,
+                            redirect:"follow"
+                        })
+                        request.setHeader("Authorization",tokenValue);
+                        request.on('response', (response) => { 
+                            console.log(`STATUS: ${response.statusCode}`); 
+                            console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                            response.on('data', (chunk) => { 
+                                console.log(`BODY: ${chunk}`);
+                                var data = JSON.parse(chunk);
+                                if (response.statusCode==200){
+                                    document.getElementById("message").innerHTML=`<h2 class="message-success">Edit thành công!!!</h2>`;
+                                }
+                                else {
+                                    document.getElementById("message").innerHTML=`<h2 class="message-error">Edit thất bại!!! Lỗi:${data.message}}</h2>`;
+                                }
+                            }); 
+                        }); 
+                        request.on('finish', () => { 
+                            console.log('Request is Finished') 
+                        }); 
+                        request.on('abort', () => { 
+                            console.log('Request is Aborted') 
+                        }); 
+                        request.on('error', (error) => { 
+                            console.log(`ERROR: ${JSON.stringify(error)}`)
+                        }); 
+                        request.on('close', (error) => { 
+                            console.log('Last Transaction has occured');
+                            document.getElementById("message").innerHTML=`<h2 class="message-error">Edit thất bại!!!</h2>`
+                        }); 
+                        request.setHeader('Content-Type', 'application/json');
+                        request.write(body, 'utf-8');
+                        request.end();
+                    })
+                    // let k;
+                    // for (k=0;k<memberCount;k++){
+                    //     document.getElementById("projectMember").click();
+                    //     document.getElementById("memberList").innerHTML+=`
+                    //         <label for="member${k}Username" style="margin-right: 15px">Member ${k} username:</label>
+                    //         <input type="text" name="member${k}Username" id="member${k}Username" value="${data.member[k].username}" placeholder="Insert Member ${k} username">
+                    //         <label for="member${k}Pay" style="margin-right: 15px">Member ${k} pay:</label>
+                    //         <input type="number" name="member${k}Pay" id="member${k}Pay" value="${data.member[k].pay}" placeholder="Insert Member ${k} pay"><br>
+                    //     `
+                    // }
+                })
+                // Upload electronic components excel file
+                document.getElementById("uploadFile").addEventListener("click",function(e){
+                    e.preventDefault();
+                    var fd = new FormData();
+                    fd.append("file",document.getElementById("componentsFile").files[0]);
+                    var fileRequest = new XMLHttpRequest();
+                    fileRequest.open("POST",`http://localhost:4000/backend/electronic-components/upload?project_id=${data.id}`);
+                    fileRequest.setRequestHeader("Authorization",tokenValue);
+                    fileRequest.withCredentials = true;
+                    fileRequest.send(fd);
+                    fileRequest.onload = function() {
+                        if(fileRequest.status==200){
+                            document.getElementById("message1").innerHTML=`<h2 class="message-success">Upload thành công!!!</h2>`;
+                        }
+                        else {
+                            document.getElementById("message1").innerHTML=`<h2 class="message-error">Upload thất bại!!!</h2>`;
+                        }
+                    }
+                })
+        })
+    })
+    </script>
+</body>
+</html>
