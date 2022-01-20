@@ -1,11 +1,12 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
   margin: auto;
   max-width: 100vw;
   padding: 2rem;
 }
 
-.signin-label{
+.signin-label {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,7 +18,7 @@ body {
   margin-right: 10px;
 }
 
-.form{
+.form {
   height: 15vh;
   display: flex;
   flex-direction: column;
@@ -26,7 +27,7 @@ body {
   font-size: 18px;
 }
 
-.guest-login{
+.guest-login {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,33 +35,35 @@ body {
   height: 14vh;
 }
 
-.title{
+.title {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: dodgerblue;
+  color: rgb(103, 179, 255);
 }
 
-.works-btn{
+.works-btn {
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
 
-.home-btn{
+.home-btn {
   display: flex;
-  justify-content:center ;
+  justify-content: center;
   align-items: center;
 }
 
-.userInformation{
+.userInformation {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-table,td,th{
+table,
+td,
+th {
   border: 1px solid black;
   font-weight: normal;
 }
