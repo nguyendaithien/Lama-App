@@ -78,7 +78,7 @@ export const customLightTheme = {
   'color-danger-transparent-500': 'rgba(255, 135, 114, 0.4)',
   'color-danger-transparent-600': 'rgba(255, 135, 114, 0.48)',
   'color-linear-primary': '#219653',
-  'color-linear-secondary': '#6FCF97',
+  'color-linear-secondary': '#6FCF97'
 };
 
 export const customDarkTheme = {
@@ -159,5 +159,5 @@ export const customDarkTheme = {
   'color-danger-transparent-500': 'rgba(255, 135, 114, 0.4)',
   'color-danger-transparent-600': 'rgba(255, 135, 114, 0.48)',
   'color-linear-primary': '#219653',
-  'color-linear-secondary': '#6FCF97',
+  'color-linear-secondary': '#6FCF97'
 };
