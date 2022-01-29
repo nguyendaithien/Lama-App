@@ -1,16 +1,22 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider } from '@ui-kitten/components';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { AppRegistry } from 'react-native';
+import { name as appName } from '../app.json';
 
-import { WelcomeScreen } from './screens/WelcomeScreen/index';
+import { MyNavigation } from './navigations/Navigation';
 
 export default function App() {
   return (
-    <ApplicationProvider {...eva} theme={eva.light}>
-      <WelcomeScreen />
-    </ApplicationProvider>
+    <>
+      <IconRegistry icons={[EvaIconsPack]} />
+      <ApplicationProvider {...eva} theme={eva.light}>
+        <MyNavigation />
+      </ApplicationProvider>
+    </>
   );
 }
 
-AppRegistry.registerComponent('app', () => App);
+AppRegistry.registerComponent(appName, () => App);
