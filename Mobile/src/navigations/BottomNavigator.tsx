@@ -5,7 +5,7 @@ import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
 import { HomeScreen } from '@src/screens/HomeScreen';
 import { ProjectScreen } from '@src/screens/ProjectScreen';
 import { TeamScreen } from '@src/screens/TeamScreen';
-import { ProfileScreen } from '@src/screens/ProfileScreen';
+import { MemberScreen } from '@src/screens/MemberScreen';
 import { MoreScreen } from '@src/screens/MoreScreen';
 import { ROUTES } from './routes';
 import { HomeIcon, ProjectIcon, ProfileIcon, TeamIcon, MoreIcon } from '@src/components/Icons';
@@ -24,11 +24,11 @@ const BottomTabBar = ({ navigation, state }: any) => (
     selectedIndex={state.index}
     onSelect={index => navigation.navigate(state.routeNames[index])}
   >
-    <BottomNavigationTab title={ROUTES.home} icon={HomeIcon} />
-    <BottomNavigationTab title={ROUTES.project} icon={ProjectIcon} />
-    <BottomNavigationTab title={ROUTES.team} icon={TeamIcon} />
-    <BottomNavigationTab title={ROUTES.profile} icon={ProfileIcon} />
-    <BottomNavigationTab title={ROUTES.more} icon={MoreIcon} />
+    <BottomNavigationTab icon={HomeIcon} />
+    <BottomNavigationTab icon={ProjectIcon} />
+    <BottomNavigationTab icon={TeamIcon} />
+    <BottomNavigationTab icon={ProfileIcon} />
+    <BottomNavigationTab icon={MoreIcon} />
   </BottomNavigation>
 );
 
@@ -36,7 +36,7 @@ const routers = [
   { name: ROUTES.home, component: HomeScreen },
   { name: ROUTES.project, component: ProjectScreen },
   { name: ROUTES.team, component: TeamScreen },
-  { name: ROUTES.profile, component: ProfileScreen },
+  { name: ROUTES.profile, component: MemberScreen },
   { name: ROUTES.more, component: MoreScreen }
 ];
 

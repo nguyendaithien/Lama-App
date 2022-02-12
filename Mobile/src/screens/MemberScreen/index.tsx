@@ -17,13 +17,14 @@ import {
   SearchIcon,
   ActiveIcon,
   UnActiveIcon,
-  TeamIcon
+  ProfileIcon
 } from '@src/components/Icons';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { teamlist } from '@src/_mocks/teamList';
-import { TeamInfor } from '@src/components/TeamInfor';
+import { members } from '@src/_mocks/members';
+import { MemberCard } from '@src/components/Member';
 
-export const TeamScreen = () => {
+export const MemberScreen = () => {
   const [value, setValue] = React.useState('');
   const [filterVisible, setFilterVisible] = React.useState(false);
   const toggleFilter = () => {
@@ -81,7 +82,7 @@ export const TeamScreen = () => {
   };
   return (
     <Layout style={styles.container}>
-      <TopNavigation alignment="center" title="Teams" accessoryRight={renderBellAction} />
+      <TopNavigation alignment="center" title="Members" accessoryRight={renderBellAction} />
       <Divider />
       <Layout style={styles.searchContainer}>
         <Input
@@ -92,19 +93,21 @@ export const TeamScreen = () => {
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
-            Number of Teams: {`${teamlist.length}`}
+            Number of Members: {`${members.length}`}
           </Text>
           <RenderRightActions />
         </Layout>
       </Layout>
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
         <ScrollView contentContainerStyle={styles.teamList}>
-          {teamlist.map((item, index) => {
+          {members.map((item, index) => {
             return (
-              <TeamInfor
-                Icon={<TeamIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />}
+              <MemberCard
+                Icon={
+                  <ProfileIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
+                }
                 key={index}
-                data={item}
+                Data={item}
                 onPress={() => {}}
               />
             );

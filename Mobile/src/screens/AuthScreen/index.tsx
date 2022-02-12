@@ -65,9 +65,6 @@ export const LoginScreen = () => {
     <KeyboardAvoidingView style={styles.container}>
       <Layout style={styles.headerContainer}>
         <LogoImage />
-        {/* <Text style={styles.signInLabel} category="h4">
-          SIGN IN
-        </Text> */}
       </Layout>
       <Layout style={styles.formContainer}>
         <InputText
@@ -124,7 +121,7 @@ export const LoginScreen = () => {
           status="primary"
           size="giant"
         >
-          ĐĂNG NHẬP
+          SIGN IN
         </Button>
         <Layout
           style={{
@@ -150,8 +147,8 @@ export const LoginScreen = () => {
 const themedStyles = StyleService.create({
   container: {
     flex: 1,
-    padding: 10
-    // backgroundColor: 'background-basic-color-1'
+    padding: 10,
+    backgroundColor: 'background-basic-color-1'
     // backgroundColor: 'grey'
   },
   headerContainer: {
