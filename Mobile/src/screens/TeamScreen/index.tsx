@@ -10,6 +10,10 @@ import {
   OverflowMenu,
   MenuItem
 } from '@ui-kitten/components';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { ROUTES } from '@src/navigations/routes';
 import {
   BellIcon,
   FilterIcon,
@@ -26,10 +30,22 @@ import { TeamInfor } from '@src/components/TeamInfor';
 export const TeamScreen = () => {
   const [value, setValue] = React.useState('');
   const [filterVisible, setFilterVisible] = React.useState(false);
+
+  const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const handleAccessDetail = (idOfDetail: number) => {
+    navigationPassID.navigate(ROUTES.teamDetail, { id: idOfDetail });
+  };
+
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
-  const renderBellAction = () => <TopNavigationAction icon={BellIcon} />;
+  const renderBellAction = () => {
+    return (
+      <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
+    );
+  };
   const renderSearchIconAction = () => {
     return (
       <TouchableOpacity
@@ -105,7 +121,7 @@ export const TeamScreen = () => {
                 Icon={<TeamIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />}
                 key={index}
                 data={item}
-                onPress={() => {}}
+                onPress={handleAccessDetail}
               />
             );
           })}

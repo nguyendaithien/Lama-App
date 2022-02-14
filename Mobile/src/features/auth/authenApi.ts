@@ -15,7 +15,7 @@ class AuthenApi {
   login(data: ILoginBody) {
     const validKeys = ['email', 'password'];
     return axiosRequest(
-      this.authenApiEndpoint + '/signin',
+      this.authenApiEndpoint + '/login',
       null,
       'POST',
       '',
@@ -24,15 +24,17 @@ class AuthenApi {
   }
 
   changePassword(token: string, data: IChangePasswordBody) {
-    const validKeys = ['password', 'newPassword', 'confirmPassword'];
+    const validKeys = ['oldPassword', 'newPassword'];
     return axiosRequest(
-      this.authenApiEndpoint + '/change_password',
+      this.authenApiEndpoint + '/password',
       null,
       'PUT',
       token,
       cleanObject(validKeys, data)
     );
   }
+
+  //member API
   getInformation(token: string) {
     return axiosRequest(this.userApiEndpoint, null, 'GET', token);
   }

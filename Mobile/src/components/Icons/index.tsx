@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from '@ui-kitten/components';
 
-// export const HomeIcon = (props: any) => <Icon {...props} name="gateway" pack="assets" />;
+export const BackIcon = (props: any) => <Icon {...props} name="arrow-back" />;
 
 export const HomeIcon = (props: any) => <Icon {...props} name="home-outline" />;
 

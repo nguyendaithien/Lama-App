@@ -12,7 +12,13 @@ interface ITeamInforProps {
 
 export const TeamInfor = ({ Icon, onPress, data }: ITeamInforProps) => {
   return (
-    <TouchableOpacity style={styles.teamInfor}>
+    <TouchableOpacity
+      style={styles.teamInfor}
+      onPress={() => {
+        console.log(`current ID of Detail: ${data.id}`);
+        onPress(data.id!);
+      }}
+    >
       <Layout
         style={{ flexDirection: 'row', backgroundColor: 'transparent', justifyContent: 'center' }}
       >

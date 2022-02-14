@@ -1,23 +1,41 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BottomNavigation, BottomNavigationTab } from '@ui-kitten/components';
 import { HomeScreen } from '@src/screens/HomeScreen';
 import { ProjectScreen } from '@src/screens/ProjectScreen';
+import { ProjectDetailScreen } from '@src/screens/ProjectScreen/ProjectDetailScreen';
 import { TeamScreen } from '@src/screens/TeamScreen';
+import { TeamDetailScreen } from '@src/screens/TeamScreen/TeamDetailScreen';
 import { MemberScreen } from '@src/screens/MemberScreen';
 import { MoreScreen } from '@src/screens/MoreScreen';
 import { ROUTES } from './routes';
 import { HomeIcon, ProjectIcon, ProfileIcon, TeamIcon, MoreIcon } from '@src/components/Icons';
-// const Stack = createNativeStackNavigator();
+import { MemberDetailScreen } from '@src/screens/MemberScreen/MemberScreenDetail';
 
+const Stack = createNativeStackNavigator();
 const BottomStack = createBottomTabNavigator();
 
-// const HomeScreenStack = () => (
-//   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.home}>
-//     <Stack.Screen name={ROUTES.home} component={HomeScreen} />
-//   </Stack.Navigator>
-// );
+const ProjectScreenStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.project}>
+    <Stack.Screen name={ROUTES.project} component={ProjectScreen} />
+    <Stack.Screen name={ROUTES.teamDetail} component={ProjectDetailScreen} />
+  </Stack.Navigator>
+);
+
+const TeamScreenStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.team}>
+    <Stack.Screen name={ROUTES.team} component={TeamScreen} />
+    <Stack.Screen name={ROUTES.teamDetail} component={TeamDetailScreen} />
+  </Stack.Navigator>
+);
+
+const MemberScreenStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.member}>
+    <Stack.Screen name={ROUTES.member} component={MemberScreen} />
+    <Stack.Screen name={ROUTES.memberDetail} component={MemberDetailScreen} />
+  </Stack.Navigator>
+);
 
 const BottomTabBar = ({ navigation, state }: any) => (
   <BottomNavigation
@@ -34,9 +52,9 @@ const BottomTabBar = ({ navigation, state }: any) => (
 
 const routers = [
   { name: ROUTES.home, component: HomeScreen },
-  { name: ROUTES.project, component: ProjectScreen },
-  { name: ROUTES.team, component: TeamScreen },
-  { name: ROUTES.profile, component: MemberScreen },
+  { name: ROUTES.projectStack, component: ProjectScreenStack },
+  { name: ROUTES.teamStack, component: TeamScreenStack },
+  { name: ROUTES.memberStack, component: MemberScreenStack },
   { name: ROUTES.more, component: MoreScreen }
 ];
 

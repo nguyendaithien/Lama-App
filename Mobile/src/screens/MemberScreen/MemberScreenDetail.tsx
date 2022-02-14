@@ -7,8 +7,19 @@ import {
   Divider,
   useTheme
 } from '@ui-kitten/components';
+import { ROUTES } from '@src/navigations/routes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StyleSheet, SafeAreaView, Image } from 'react-native';
-import { BellIcon, PhoneIcon, MailIcon, LocationIcon, GenderIcon } from '@src/components/Icons';
+import {
+  BellIcon,
+  PhoneIcon,
+  MailIcon,
+  LocationIcon,
+  GenderIcon,
+  BackIcon
+} from '@src/components/Icons';
 import { DataInforRender } from '@src/components/Member';
 
 const inforUser = [
@@ -20,9 +31,24 @@ const inforUser = [
   }
 ];
 
-export const DetailMemberScreen = () => {
+export const MemberDetailScreen = () => {
+  const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamListPassID>>();
+  const memberID = route.params.id;
+
   const theme = useTheme();
-  const renderBellAction = () => <TopNavigationAction icon={BellIcon} />;
+
+  const navigateBack = () => {
+    navigationPassID.goBack();
+  };
+
+  const renderBellAction = () => {
+    return (
+      <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
+    );
+  };
+  const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={navigateBack} />;
 
   const inforData = [
     {
@@ -47,7 +73,12 @@ export const DetailMemberScreen = () => {
 
   return (
     <Layout style={style.container}>
-      <TopNavigation alignment="center" title="Profile" accessoryRight={renderBellAction} />
+      <TopNavigation
+        alignment="center"
+        title="Profile"
+        accessoryRight={renderBellAction}
+        accessoryLeft={BackAction}
+      />
       <Divider />
       <Layout style={style.avatarContainer}>
         <Layout style={style.avatar}>

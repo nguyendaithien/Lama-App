@@ -19,18 +19,32 @@ import {
   UnActiveIcon,
   ProfileIcon
 } from '@src/components/Icons';
+import { ROUTES } from '@src/navigations/routes';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { teamlist } from '@src/_mocks/teamList';
 import { members } from '@src/_mocks/members';
 import { MemberCard } from '@src/components/Member';
 
 export const MemberScreen = () => {
+  const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [value, setValue] = React.useState('');
   const [filterVisible, setFilterVisible] = React.useState(false);
+
+  const handleAccessDetail = (idOfDetail: number) => {
+    navigationPassID.navigate(ROUTES.memberDetail, { id: idOfDetail });
+  };
+
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
-  const renderBellAction = () => <TopNavigationAction icon={BellIcon} />;
+  const renderBellAction = () => {
+    return (
+      <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
+    );
+  };
   const renderSearchIconAction = () => {
     return (
       <TouchableOpacity
@@ -108,7 +122,7 @@ export const MemberScreen = () => {
                 }
                 key={index}
                 Data={item}
-                onPress={() => {}}
+                onPress={handleAccessDetail}
               />
             );
           })}

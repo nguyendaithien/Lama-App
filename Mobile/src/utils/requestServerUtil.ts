@@ -16,22 +16,10 @@ export const axiosRequest = (
     headers: {}
   };
   if (token) {
-    axiosConfig.headers.Authorization = `Bearer ${token}`;
+    axiosConfig.headers!.Authorization = `Bearer ${token}`;
   }
 
   return axios(axiosConfig);
-};
-
-export const makeQuery = (object: Object) => {
-  let query = '?';
-  let values = Object.entries(object);
-  values.forEach((value, index) => {
-    query += `${value[0]}=${value[1] === 0 ? 0 : value[1] || ''}`;
-    if (index !== values.length - 1) {
-      query += '&';
-    }
-  });
-  return query;
 };
 
 export const cleanObject = (keys: string[], data: any): any => {

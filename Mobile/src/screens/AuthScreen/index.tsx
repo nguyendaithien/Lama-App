@@ -17,8 +17,11 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@src/navigations/Navigation';
 import { MailIcon, LockIcon } from '@src/components/Icons';
-// import { fetchLogin } from '@src/features/auth/authenSlice';
-// import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
+import { fetchLogin, selectIsAuth } from '@src/features/auth/authenSlice';
+import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
+import { ROUTES } from '@src/navigations/routes';
+import { useEffect } from 'react';
+
 interface IFormData {
   username: string;
   password: string;
@@ -39,11 +42,16 @@ export const LoginScreen = () => {
   const [password, setPassword] = useState<string>('');
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
 
-  //   const dispatch = useAppDispatch();
-  //   const loginMsg = useAppSelector(state => state.auth.fetchLoginMsg);
-  //   const loading = useAppSelector(state => state.auth.isFetchingLogin);
-  const loginMsg = 'Login Success';
-  const loading = true;
+  const isAuth = useAppSelector(selectIsAuth);
+  const dispatch = useAppDispatch();
+  const loginMsg = useAppSelector(state => state.auth.fetchLoginMsg);
+  const loading = useAppSelector(state => state.auth.isFetchingLogin);
+  // const loginMsg = 'Login Success';
+  // const loading = true;
+
+  useEffect(() => {
+    isAuth && navigation.replace(ROUTES.main);
+  }, [navigation, isAuth]);
 
   const styles = useStyleSheet(themedStyles);
 
@@ -57,9 +65,9 @@ export const LoginScreen = () => {
     </TouchableWithoutFeedback>
   );
 
-  //   const handleLoginButton = async () => {
-  //     dispatch(fetchLogin({ email: username, password: password }));
-  //   };
+  const handleLoginButton = async () => {
+    dispatch(fetchLogin({ email: username, password: password }));
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -94,10 +102,10 @@ export const LoginScreen = () => {
           }}
         >
           <TouchableOpacity style={{ position: 'absolute', right: 0 }}>
-            <Text status="primary">Forgot Password?</Text>
+            <Text status="info">Forgot Password?</Text>
           </TouchableOpacity>
         </Layout>
-        {/* {loginMsg && (
+        {loginMsg && (
           <Text
             style={[styles.errorText, { display: loginMsg ? 'flex' : 'none' }]}
             status={'danger'}
@@ -110,14 +118,14 @@ export const LoginScreen = () => {
           <Modal visible={loading} backdropStyle={styles.backdrop}>
             <Spinner style={styles.loading} size="giant" />
           </Modal>
-        </Layout> */}
+        </Layout>
       </Layout>
 
       <Layout style={styles.signInButton}>
         <Button
           style={styles.button}
-          //   onPress={handleLoginButton}
-          onPress={() => navigation.navigate('Main')}
+          onPress={handleLoginButton}
+          // onPress={() => navigation.navigate('Main')}
           status="primary"
           size="giant"
         >
@@ -136,7 +144,7 @@ export const LoginScreen = () => {
             style={{ marginLeft: 10 }}
             onPress={() => navigation.navigate('Đăng ký')}
           >
-            <Text status="primary">Sign up</Text>
+            <Text status="info">Sign up</Text>
           </TouchableOpacity>
         </Layout>
       </Layout>

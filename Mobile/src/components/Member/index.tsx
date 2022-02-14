@@ -45,7 +45,7 @@ export const DataInforRender = ({ Icon, Data }: InforProps) => {
 
 export const MemberCard = ({ Icon, Data, onPress }: IMemberCardProps) => {
   return (
-    <TouchableOpacity style={styles.memberCardContainer}>
+    <TouchableOpacity style={styles.memberCardContainer} onPress={() => onPress(Data.id!)}>
       <Layout
         style={{ flexDirection: 'row', backgroundColor: 'transparent', justifyContent: 'center' }}
       >
