@@ -14,6 +14,7 @@ class AuthenApi {
 
   login(data: ILoginBody) {
     const validKeys = ['email', 'password'];
+    console.log(this.authenApiEndpoint + '/login');
     return axiosRequest(
       this.authenApiEndpoint + '/login',
       null,

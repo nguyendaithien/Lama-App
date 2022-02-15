@@ -40,3 +40,7 @@ export const FilterIcon = (props: any) => <Icon {...props} name="options-2-outli
 export const ActiveIcon = (props: any) => <Icon {...props} name="flash-outline" />;
 
 export const UnActiveIcon = (props: any) => <Icon {...props} name="flash-off-outline" />;
+
+export const MessageIcon = (props: any) => <Icon {...props} name="message-circle-outline" />;
+
+export const ClockIcon = (props: any) => <Icon {...props} name="clock-outline" />;

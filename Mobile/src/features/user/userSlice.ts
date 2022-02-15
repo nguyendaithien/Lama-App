@@ -172,7 +172,7 @@ export const userSlice = createSlice({
         state.fetchGetUsersMsg = null;
       })
       .addCase(fetchGetUsers.fulfilled, (state, action) => {
-        state.users = action.payload.teams;
+        state.users = action.payload.items;
         state.isFetchingGetUsers = false;
         state.fetchGetUsersMsg = null;
       })

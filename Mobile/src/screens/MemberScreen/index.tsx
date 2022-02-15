@@ -25,9 +25,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
-import { members } from '@src/_mocks/members';
 import { MemberCard } from '@src/components/Member';
-import { fetchGetUsers } from '@src/features/user/userSlice';
+import { fetchGetUserInforByID, fetchGetUsers } from '@src/features/user/userSlice';
 
 export const MemberScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
@@ -42,8 +41,8 @@ export const MemberScreen = () => {
     page: 1,
     limit: 100,
     search: '',
-    sort: 2,
-    status: 1
+    sort: null,
+    status: null
   });
   //redux state
   const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
@@ -52,6 +51,7 @@ export const MemberScreen = () => {
   //
   useEffect(() => {
     dispatch(fetchGetUsers(paramGetUsers));
+    dispatch(fetchGetUserInforByID(2));
   }, [dispatch, paramGetUsers]);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -135,7 +135,7 @@ export const MemberScreen = () => {
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
-            Number of Members: {`${members.length}`}
+            Number of Members: {`${users?.length ? users?.length : 0}`}
           </Text>
           <RenderRightActions />
         </Layout>
@@ -145,18 +145,22 @@ export const MemberScreen = () => {
           contentContainerStyle={styles.teamList}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-          {users.map((item, index) => {
-            return (
-              <MemberCard
-                Icon={
-                  <ProfileIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
-                }
-                key={index}
-                Data={item}
-                onPress={handleAccessDetail}
-              />
-            );
-          })}
+          {users?.length ? (
+            users.map((item, index) => {
+              return (
+                <MemberCard
+                  Icon={
+                    <ProfileIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
+                  }
+                  key={index}
+                  Data={item}
+                  onPress={handleAccessDetail}
+                />
+              );
+            })
+          ) : (
+            <Text />
+          )}
         </ScrollView>
       </Layout>
       <Layout style={styles.plusContainer}>

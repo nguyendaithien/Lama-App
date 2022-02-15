@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Layout,
   Text,
@@ -17,25 +17,27 @@ import {
   PhoneIcon,
   MailIcon,
   LocationIcon,
-  GenderIcon,
-  BackIcon
+  TeamIcon,
+  BackIcon,
+  MessageIcon,
+  ClockIcon
 } from '@src/components/Icons';
 import { DataInforRender } from '@src/components/Member';
-
-const inforUser = [
-  {
-    username: 'daobakhanhbk',
-    name: 'Đào Bá Khánh',
-    mail: 'daobakhanh@gmail.com',
-    avatar: null
-  }
-];
+import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
+import { fetchGetUserInforByID, selectUserInfor } from '@src/features/user/userSlice';
 
 export const MemberDetailScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamListPassID>>();
+
+  const userInfor = useAppSelector(selectUserInfor);
+  const dispatch = useAppDispatch();
   const memberID = route.params.id;
+
+  useEffect(() => {
+    dispatch(fetchGetUserInforByID(memberID));
+  }, [dispatch, memberID]);
 
   const theme = useTheme();
 
@@ -54,20 +56,34 @@ export const MemberDetailScreen = () => {
     {
       id: 0,
       nameOfData: 'Mail',
-      dataInfor: `${inforUser[0].mail}`,
+      dataInfor: `${userInfor.email!}`,
       icon: <MailIcon style={style.icon} fill={theme['color-info-500']} />
     },
     {
       id: 1,
       nameOfData: 'Phone',
-      dataInfor: '0357***570',
+      dataInfor: `${userInfor.phone!}`,
       icon: <PhoneIcon style={style.icon} fill={theme['color-info-500']} />
     },
     {
       id: 2,
-      nameOfData: 'Gender',
-      dataInfor: 'Male',
-      icon: <GenderIcon style={style.icon} fill={theme['color-info-500']} />
+      nameOfData: 'Status',
+      dataInfor: userInfor.isActive ? 'Active' : 'Inactive',
+      icon: <MessageIcon style={style.icon} fill={theme['color-info-500']} />
+    },
+    {
+      id: 3,
+      nameOfData: 'Team',
+      dataInfor: userInfor.userTeams?.length
+        ? `${userInfor.userTeams![0]?.team?.name} (${userInfor.userTeams![0]?.role})`
+        : 'Null',
+      icon: <TeamIcon style={style.icon} fill={theme['color-info-500']} />
+    },
+    {
+      id: 4,
+      nameOfData: 'Created',
+      dataInfor: `${userInfor.createdAt?.slice(0, 10)}`,
+      icon: <ClockIcon style={style.icon} fill={theme['color-info-500']} />
     }
   ];
 
@@ -83,11 +99,14 @@ export const MemberDetailScreen = () => {
       <Layout style={style.avatarContainer}>
         <Layout style={style.avatar}>
           <Image
-            style={{ height: '90%', resizeMode: 'contain' }}
-            source={require('@src/assets/images/avatar.png')}
+            style={[style.avatar, { resizeMode: 'contain', borderWidth: 0 }]}
+            source={{
+              uri: userInfor?.avatar
+              // uri: 'https://reactnative.dev/img/tiny_logo.png'
+            }}
           />
         </Layout>
-        <Text category="h4">{`${inforUser[0].name}`}</Text>
+        <Text category="h4">{`${userInfor.firstName} ${userInfor.lastName} - ID: ${userInfor.id}`}</Text>
         <Layout style={{ flexDirection: 'row' }}>
           <LocationIcon fill={theme['color-info-500']} style={style.icon} />
           <Text status="primary"> Hai Ba Trung, Ha Noi</Text>
@@ -106,13 +125,13 @@ const style = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 10 },
   profileContainer: {},
   avatarContainer: {
-    height: 250,
+    height: 200,
     justifyContent: 'space-evenly',
     alignItems: 'center'
   },
   avatar: {
-    height: 140,
-    width: 140,
+    height: 120,
+    width: 120,
     borderWidth: 2,
     borderRadius: 70,
     borderColor: 'grey',

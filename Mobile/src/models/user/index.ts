@@ -43,6 +43,6 @@ export type IParamGetUsers = {
   page?: number;
   limit?: number;
   search?: string;
-  sort?: number;
-  status?: number;
+  sort?: number | null;
+  status?: number | null;
 };

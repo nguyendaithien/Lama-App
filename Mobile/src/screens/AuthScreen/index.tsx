@@ -50,6 +50,7 @@ export const LoginScreen = () => {
   // const loading = true;
 
   useEffect(() => {
+    console.log({ isAuth });
     isAuth && navigation.replace(ROUTES.main);
   }, [navigation, isAuth]);
 
