@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Text } from '@ui-kitten/components';
 import { StyleSheet, TouchableOpacity } from 'react-native';
+import { IUser } from '@src/models/user';
 // import { BellIcon, PhoneIcon, MailIcon, LocationIcon, GenderIcon } from '@src/components/Icons';
 interface InforProps {
   Icon: React.ReactElement;
@@ -14,15 +15,7 @@ interface IconProps {
 }
 interface IMemberCardProps {
   Icon: React.ReactElement;
-  Data: {
-    name: string;
-    email: string;
-    isActive: boolean;
-    phone: string;
-    uni: string;
-    id: number;
-    field: string;
-  };
+  Data: IUser;
   onPress: (id: number) => void;
 }
 export const DataInforRender = ({ Icon, Data }: InforProps) => {
@@ -50,9 +43,9 @@ export const MemberCard = ({ Icon, Data, onPress }: IMemberCardProps) => {
         style={{ flexDirection: 'row', backgroundColor: 'transparent', justifyContent: 'center' }}
       >
         <Layout style={{ backgroundColor: 'transparent', justifyContent: 'center' }}>{Icon}</Layout>
-        <Text category={'h5'} style={{}}>{`${Data.name}`}</Text>
+        <Text category={'h5'} style={{}}>{`${Data!.firstName} ${Data!.lastName}`}</Text>
       </Layout>
-      <Text style={{}}>Feild: {`${Data.field}`}</Text>
+      <Text style={{}}>Team Name: {`${Data!.userTeams![0].team!.name}`}</Text>
     </TouchableOpacity>
   );
 };

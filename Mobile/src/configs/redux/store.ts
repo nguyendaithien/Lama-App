@@ -12,10 +12,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import appReducer from '@src/features/app/appSlice';
 import authReducer from '@src/features/auth/authenSlice';
+import userReducer from '@src/features/user/userSlice';
 
 const rootReducer = combineReducers({
   app: appReducer,
-  auth: authReducer
+  auth: authReducer,
+  user: userReducer
 });
 
 const persistConfig = {

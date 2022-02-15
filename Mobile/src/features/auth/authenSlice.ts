@@ -3,7 +3,7 @@ import { RootState } from '@src/configs/redux/store';
 import authenApi from './authenApi';
 import { ILoginBody, IChangePasswordBody } from '@src/models/auth';
 import { getToken, setToken, clearToken } from '@src/utils/tokenUtil';
-import { IUser, IUpdateUserBody } from '@src/models/user';
+import { IUser, IUserBodyRequest } from '@src/models/user';
 import MESSAGES from '@src/configs/constant/messages';
 
 export interface IAuthenState {
@@ -92,7 +92,7 @@ export const fetchGetInfo = createAsyncThunk(
 
 export const fetchUpdateUserInfo = createAsyncThunk(
   'auth/fetchUpdateUserInfo',
-  async (payload: IUpdateUserBody, { rejectWithValue }) => {
+  async (payload: IUserBodyRequest, { rejectWithValue }) => {
     try {
       const token = await getToken();
       const response = await authenApi.updateUserInfo(token, payload);

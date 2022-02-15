@@ -1,19 +1,48 @@
 export type IUser = {
   id?: number;
-  fullName?: string;
-  dateOfBirth?: string;
-  avatar?: string | null;
-  gender?: number | null;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  email?: string;
   phone?: string;
-  email?: string | null;
   role?: string;
-  lastLogin?: string;
+  userTeams?: Array<{
+    role?: string;
+    isOwner?: boolean;
+    team?: {
+      id?: number;
+      name?: string;
+      avatar?: string;
+      description?: string;
+      isActive?: boolean;
+      createdAt?: string;
+      updatedAt?: string;
+      deletedAt?: any;
+    };
+  }>;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: any;
 };
 
-export type IUpdateUserBody = {
-  fullName?: string;
-  phone?: number;
-  avatar?: string;
-  gender?: number;
-  dateOfBirth?: string;
+export type IUserBodyRequest = {
+  id?: number;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+};
+
+export type IUpdateStatusUser = {
+  id?: number;
+  isActive?: boolean;
+};
+
+export type IParamGetUsers = {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: number;
+  status?: number;
 };

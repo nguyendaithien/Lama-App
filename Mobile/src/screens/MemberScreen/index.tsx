@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Layout,
   Text,
@@ -10,6 +10,7 @@ import {
   OverflowMenu,
   MenuItem
 } from '@ui-kitten/components';
+import { StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import {
   BellIcon,
   FilterIcon,
@@ -23,16 +24,41 @@ import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import { members } from '@src/_mocks/members';
 import { MemberCard } from '@src/components/Member';
+import { fetchGetUsers } from '@src/features/user/userSlice';
 
 export const MemberScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [value, setValue] = React.useState('');
-  const [filterVisible, setFilterVisible] = React.useState(false);
+  const dispatch = useAppDispatch();
 
+  //state
+  const [valueTextSearch, setValueTextSearch] = React.useState('');
+  const [filterVisible, setFilterVisible] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [paramGetUsers, setParamGetUsers] = React.useState({
+    page: 1,
+    limit: 100,
+    search: '',
+    sort: 2,
+    status: 1
+  });
+  //redux state
+  const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
+  const users = useAppSelector(state => state.user.users);
+
+  //
+  useEffect(() => {
+    dispatch(fetchGetUsers(paramGetUsers));
+  }, [dispatch, paramGetUsers]);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchGetUsers(paramGetUsers));
+    !isLoading && setRefreshing(false);
+  }, [dispatch, paramGetUsers, isLoading]);
+  //
   const handleAccessDetail = (idOfDetail: number) => {
     navigationPassID.navigate(ROUTES.memberDetail, { id: idOfDetail });
   };
@@ -40,6 +66,8 @@ export const MemberScreen = () => {
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
+
+  //render Icon Action
   const renderBellAction = () => {
     return (
       <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
@@ -50,7 +78,7 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValue('');
+          setValueTextSearch('');
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -62,7 +90,7 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValue('');
+          setValueTextSearch('');
         }}
       >
         <PlusIcon fill="grey" style={styles.iconBig} />
@@ -100,10 +128,10 @@ export const MemberScreen = () => {
       <Divider />
       <Layout style={styles.searchContainer}>
         <Input
-          value={value}
+          value={valueTextSearch}
           placeholder="Place your Text"
           accessoryRight={renderSearchIconAction}
-          onChangeText={nextValue => setValue(nextValue)}
+          onChangeText={nextValue => setValueTextSearch(nextValue)}
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
@@ -113,8 +141,11 @@ export const MemberScreen = () => {
         </Layout>
       </Layout>
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
-        <ScrollView contentContainerStyle={styles.teamList}>
-          {members.map((item, index) => {
+        <ScrollView
+          contentContainerStyle={styles.teamList}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
+          {users.map((item, index) => {
             return (
               <MemberCard
                 Icon={

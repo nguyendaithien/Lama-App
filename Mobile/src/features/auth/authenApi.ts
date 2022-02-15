@@ -1,7 +1,7 @@
 import { API_ENDPOINT } from '@env';
 import { axiosRequest, cleanObject } from '@src/utils/requestServerUtil';
 import { ILoginBody, IChangePasswordBody } from '@src/models/auth';
-import { IUpdateUserBody } from '@src/models/user';
+import { IUserBodyRequest } from '@src/models/user';
 
 class AuthenApi {
   authenApiEndpoint: string;
@@ -39,7 +39,7 @@ class AuthenApi {
     return axiosRequest(this.userApiEndpoint, null, 'GET', token);
   }
 
-  updateUserInfo(token: string, data: IUpdateUserBody) {
+  updateUserInfo(token: string, data: IUserBodyRequest) {
     const validKeys = ['fullName', 'phone', 'gender', 'avatar', 'dateOfBirth'];
     return axiosRequest(
       this.userApiEndpoint + '/update',

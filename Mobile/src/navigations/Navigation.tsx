@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import useCheckAppFirstLaunch from '@src/hooks/useCheckAppFirstLaunch';
+import useCheckAuth from '@src/hooks/useCheckAuth';
 import { ROUTES } from './routes';
 import { BottomNavigator } from './BottomNavigator';
 import { LoginScreen } from '@src/screens/AuthScreen';
-import useCheckAppFirstLaunch from '@src/hooks/useCheckAppFirstLaunch';
-import useCheckAuth from '@src/hooks/useCheckAuth';
 import { RegisterScreen } from '@src/screens/AuthScreen/RegisterScreen';
 import { NotificationScreen } from '@src/screens/NotificationScreen';
 export type RootStackParamList = {
