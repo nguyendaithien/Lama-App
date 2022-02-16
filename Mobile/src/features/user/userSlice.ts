@@ -2,7 +2,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '@src/configs/redux/store';
 import userAPI from './userAPI';
 import { getToken } from '@src/utils/tokenUtil';
-import { IUserBodyRequest, IUpdateStatusUser, IParamGetUsers, IUser } from '@src/models/user';
+import {
+  IUserBodyRequest,
+  IUpdateStatusUser,
+  IParamGetUsers,
+  IUser,
+  IUserBodyRequestCreate
+} from '@src/models/user';
+import MESSAGES from '@src/configs/constant/messages';
 
 export interface IUserSlice {
   users: Array<IUser>;
@@ -102,7 +109,7 @@ export const fetchGetUserInforByID = createAsyncThunk(
 
 export const fetchCreateNewUser = createAsyncThunk(
   'user/fetchCreateNewUser',
-  async (payload: IUserBodyRequest, { rejectWithValue }) => {
+  async (payload: IUserBodyRequestCreate, { rejectWithValue }) => {
     try {
       const token = await getToken();
       const response = await userAPI.createUser(token, payload);
@@ -206,7 +213,7 @@ export const userSlice = createSlice({
       .addCase(fetchCreateNewUser.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isCreatingNewUser = false;
-        state.fetchCreateNewUserMsg = null;
+        state.fetchCreateNewUserMsg = MESSAGES.CREATE_SUCCESS;
       })
 
       //handle update user

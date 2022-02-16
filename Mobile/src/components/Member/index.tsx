@@ -59,8 +59,6 @@ export const MemberCard = ({ Icon, Data, onPress }: IMemberCardProps) => {
               uri: Data?.avatar
             }}
           />
-          {/* {Icon} */}
-          {console.log(Data.avatar)}
         </Layout>
         <Layout style={{ backgroundColor: 'transparent', justifyContent: 'center' }}>
           <Text category={'h5'} style={{ justifyContent: 'center' }}>{`${

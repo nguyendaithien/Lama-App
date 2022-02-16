@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Text,
@@ -18,7 +18,7 @@ import {
   SearchIcon,
   ActiveIcon,
   UnActiveIcon,
-  ProfileIcon
+  PersonIcon
 } from '@src/components/Icons';
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -34,7 +34,6 @@ export const MemberScreen = () => {
   const dispatch = useAppDispatch();
 
   //state
-  const [valueTextSearch, setValueTextSearch] = React.useState('');
   const [filterVisible, setFilterVisible] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
   const [paramGetUsers, setParamGetUsers] = React.useState({
@@ -44,15 +43,21 @@ export const MemberScreen = () => {
     sort: null,
     status: null
   });
+  //state query
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(100);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState(null);
+  const [status, setStatus] = useState(null);
   //redux state
   const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
   const users = useAppSelector(state => state.user.users);
 
   //
   useEffect(() => {
-    dispatch(fetchGetUsers(paramGetUsers));
-    dispatch(fetchGetUserInforByID(2));
-  }, [dispatch, paramGetUsers]);
+    dispatch(fetchGetUsers({ page, limit, search, sort, status }));
+  }, [dispatch, limit, page, paramGetUsers, search, sort, status]);
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     dispatch(fetchGetUsers(paramGetUsers));
@@ -78,7 +83,8 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValueTextSearch('');
+          dispatch(fetchGetUsers({ page, limit, search, sort, status }));
+          setSearch('');
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -90,7 +96,8 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValueTextSearch('');
+          setSearch('');
+          navigation.navigate(ROUTES.createMember);
         }}
       >
         <PlusIcon fill="grey" style={styles.iconBig} />
@@ -128,10 +135,10 @@ export const MemberScreen = () => {
       <Divider />
       <Layout style={styles.searchContainer}>
         <Input
-          value={valueTextSearch}
+          value={search}
           placeholder="Place your Text"
           accessoryRight={renderSearchIconAction}
-          onChangeText={nextValue => setValueTextSearch(nextValue)}
+          onChangeText={nextValue => setSearch(nextValue)}
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
@@ -150,7 +157,7 @@ export const MemberScreen = () => {
               return (
                 <MemberCard
                   Icon={
-                    <ProfileIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
+                    <PersonIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
                   }
                   key={index}
                   Data={item}

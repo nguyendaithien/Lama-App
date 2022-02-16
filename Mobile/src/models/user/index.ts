@@ -34,6 +34,14 @@ export type IUserBodyRequest = {
   phone?: string;
 };
 
+export type IUserBodyRequestCreate = {
+  id?: number;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+};
+
 export type IUpdateStatusUser = {
   id?: number;
   isActive?: boolean;

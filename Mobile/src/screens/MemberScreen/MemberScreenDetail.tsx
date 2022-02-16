@@ -1,127 +1,234 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Layout,
   Text,
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme
+  useTheme,
+  Button,
+  Select,
+  SelectItem,
+  IndexPath,
+  RadioGroup,
+  Radio
 } from '@ui-kitten/components';
-import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StyleSheet, SafeAreaView, Image } from 'react-native';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
+import { StyleSheet, Image, ScrollView, RefreshControl } from 'react-native';
 import {
-  BellIcon,
   PhoneIcon,
   MailIcon,
   LocationIcon,
   TeamIcon,
+  SaveIcon,
   BackIcon,
   MessageIcon,
-  ClockIcon
+  ClockIcon,
+  EditIcon,
+  EmailIcon,
+  PersonIcon
 } from '@src/components/Icons';
+import InputText from '@src/components/InputText';
 import { DataInforRender } from '@src/components/Member';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
-import { fetchGetUserInforByID, selectUserInfor } from '@src/features/user/userSlice';
+import {
+  fetchChangeStatusUser,
+  fetchGetUserInforByID,
+  fetchUpdateUser,
+  selectUserInfor
+} from '@src/features/user/userSlice';
 
 export const MemberDetailScreen = () => {
+  const theme = useTheme();
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamListPassID>>();
+  const memberID = route.params.id;
+  const dispatch = useAppDispatch();
+
+  //rootstate
 
   const userInfor = useAppSelector(selectUserInfor);
-  const dispatch = useAppDispatch();
-  const memberID = route.params.id;
+  const isLoading = useAppSelector(state => state.user.isFetchingGetUserInforByID);
 
+  //screen state
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [firstName, setFirstName] = useState(userInfor?.firstName);
+  const [lastName, setLastName] = useState(userInfor?.lastName);
+  const [email, setEmail] = useState(userInfor?.email);
+  const [phone, setPhone] = useState(userInfor?.phone);
+  const [activeStatus, setActiveStatus] = useState(userInfor?.isActive);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const handleSetValueWhenFetch = useCallback(() => {
+    setFirstName(userInfor.firstName);
+    setLastName(userInfor.lastName);
+    setEmail(userInfor.email);
+    setPhone(userInfor.phone);
+    setActiveStatus(userInfor.isActive);
+    setSelectedIndex(userInfor.isActive ? 0 : 1);
+  }, [
+    userInfor.email,
+    userInfor.firstName,
+    userInfor.isActive,
+    userInfor.lastName,
+    userInfor.phone
+  ]);
+  //
   useEffect(() => {
     dispatch(fetchGetUserInforByID(memberID));
-  }, [dispatch, memberID]);
+    handleSetValueWhenFetch();
+  }, [dispatch, handleSetValueWhenFetch, memberID]);
 
-  const theme = useTheme();
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    handleSetValueWhenFetch();
+    dispatch(fetchGetUserInforByID(memberID));
+    !isLoading && setRefreshing(false);
+  }, [dispatch, handleSetValueWhenFetch, isLoading, memberID]);
 
+  //renderIconAction
+  const renderEditAction = () => {
+    return (
+      <TopNavigationAction
+        icon={!isEdit ? EditIcon : SaveIcon}
+        onPress={() => {
+          setIsEdit(!isEdit);
+          dispatch(fetchGetUserInforByID(memberID));
+          isEdit && dispatch(fetchUpdateUser({ id: memberID, firstName, lastName, email, phone }));
+          handleSetValueWhenFetch();
+        }}
+      />
+    );
+  };
   const navigateBack = () => {
     navigationPassID.goBack();
   };
-
-  const renderBellAction = () => {
-    return (
-      <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
-    );
-  };
-  const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={navigateBack} />;
-
-  const inforData = [
-    {
-      id: 0,
-      nameOfData: 'Mail',
-      dataInfor: `${userInfor.email!}`,
-      icon: <MailIcon style={style.icon} fill={theme['color-info-500']} />
-    },
-    {
-      id: 1,
-      nameOfData: 'Phone',
-      dataInfor: `${userInfor.phone!}`,
-      icon: <PhoneIcon style={style.icon} fill={theme['color-info-500']} />
-    },
-    {
-      id: 2,
-      nameOfData: 'Status',
-      dataInfor: userInfor.isActive ? 'Active' : 'Inactive',
-      icon: <MessageIcon style={style.icon} fill={theme['color-info-500']} />
-    },
-    {
-      id: 3,
-      nameOfData: 'Team',
-      dataInfor: userInfor.userTeams?.length
-        ? `${userInfor.userTeams![0]?.team?.name} (${userInfor.userTeams![0]?.role})`
-        : 'Null',
-      icon: <TeamIcon style={style.icon} fill={theme['color-info-500']} />
-    },
-    {
-      id: 4,
-      nameOfData: 'Created',
-      dataInfor: `${userInfor.createdAt?.slice(0, 10)}`,
-      icon: <ClockIcon style={style.icon} fill={theme['color-info-500']} />
-    }
-  ];
+  const renderBackAction = () => <TopNavigationAction icon={BackIcon} onPress={navigateBack} />;
 
   return (
-    <Layout style={style.container}>
+    <Layout style={styles.container}>
       <TopNavigation
         alignment="center"
         title="Profile"
-        accessoryRight={renderBellAction}
-        accessoryLeft={BackAction}
+        accessoryRight={renderEditAction}
+        accessoryLeft={renderBackAction}
       />
       <Divider />
-      <Layout style={style.avatarContainer}>
-        <Layout style={style.avatar}>
+      <Layout style={styles.avatarContainer}>
+        <Layout style={styles.avatar}>
           <Image
-            style={[style.avatar, { resizeMode: 'contain', borderWidth: 0 }]}
+            style={[styles.avatar, { resizeMode: 'contain', borderWidth: 0 }]}
             source={{
               uri: userInfor?.avatar
-              // uri: 'https://reactnative.dev/img/tiny_logo.png'
             }}
           />
         </Layout>
         <Text category="h4">{`${userInfor.firstName} ${userInfor.lastName} - ID: ${userInfor.id}`}</Text>
         <Layout style={{ flexDirection: 'row' }}>
-          <LocationIcon fill={theme['color-info-500']} style={style.icon} />
+          <LocationIcon fill={theme['color-info-500']} style={styles.icon} />
           <Text status="primary"> Hai Ba Trung, Ha Noi</Text>
         </Layout>
       </Layout>
       <Divider />
-      <Layout style={{ alignItems: 'flex-start', paddingTop: 20, paddingLeft: 20 }}>
-        {inforData.map((item, index) => {
-          return <DataInforRender key={index} Icon={item.icon} Data={item} />;
-        })}
+      <Layout style={{ height: '60%' }}>
+        <ScrollView
+          contentContainerStyle={{ justifyContent: 'center' }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        >
+          {isEdit && (
+            <>
+              <RadioGroup
+                style={{ marginHorizontal: 10, marginTop: 10 }}
+                selectedIndex={selectedIndex}
+                onChange={index => {
+                  console.log(activeStatus);
+                  dispatch(fetchChangeStatusUser({ id: memberID, isActive: !activeStatus }));
+                  setActiveStatus(!activeStatus);
+                  setSelectedIndex(index);
+                }}
+              >
+                <Radio>Active</Radio>
+                <Radio>Inactive</Radio>
+              </RadioGroup>
+            </>
+          )}
+          {isEdit && (
+            <>
+              <InputText
+                label="Fisrtname: "
+                style={styles.input}
+                placeholder="Firstname"
+                accessoryLeft={PersonIcon}
+                value={firstName}
+                onChangeText={setFirstName}
+                keyboardType="default"
+              />
+              <InputText
+                label="Lastname: "
+                style={styles.input}
+                placeholder="Lastname"
+                accessoryLeft={PersonIcon}
+                value={lastName}
+                onChangeText={setLastName}
+                keyboardType="default"
+              />
+            </>
+          )}
+
+          <InputText
+            label="Email: "
+            style={styles.input}
+            disabled={!isEdit}
+            placeholder="Họ tên"
+            accessoryLeft={EmailIcon}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
+          <InputText
+            label="Phone: "
+            style={styles.input}
+            disabled={!isEdit}
+            placeholder="Phone"
+            accessoryLeft={PhoneIcon}
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="numeric"
+          />
+          <InputText
+            label="Team: "
+            style={styles.input}
+            disabled={true}
+            placeholder="User team"
+            accessoryLeft={TeamIcon}
+            value={
+              userInfor.userTeams?.length
+                ? userInfor.userTeams![0]?.team?.name +
+                  (userInfor.userTeams![0]?.role ? ' - (Leader)' : '- (Member)')
+                : 'Null'
+            }
+            onChangeText={setPhone}
+            keyboardType="numeric"
+          />
+          <InputText
+            label="Created at: "
+            style={styles.input}
+            disabled={true}
+            placeholder="Create at"
+            accessoryLeft={TeamIcon}
+            value={userInfor?.createdAt?.slice(0, 10)}
+            onChangeText={setPhone}
+            keyboardType="numeric"
+          />
+        </ScrollView>
       </Layout>
     </Layout>
   );
 };
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   container: { flex: 1, paddingHorizontal: 10 },
   profileContainer: {},
   avatarContainer: {
@@ -138,5 +245,8 @@ const style = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  icon: { height: 25, width: 25, marginRight: 5 }
+  icon: { height: 25, width: 25, marginRight: 5 },
+  input: {
+    borderRadius: 3
+  }
 });

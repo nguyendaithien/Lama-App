@@ -15,6 +15,7 @@ export const ROUTES = {
   memberStack: 'Member Stack',
   member: 'Member',
   memberDetail: 'Member Detail',
+  createMember: 'Create Member',
   more: 'More',
   changePassword: 'Đổi mật khẩu',
   about: 'Thông tin'

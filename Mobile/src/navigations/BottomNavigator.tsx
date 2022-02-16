@@ -10,8 +10,9 @@ import { TeamDetailScreen } from '@src/screens/TeamScreen/TeamDetailScreen';
 import { MemberScreen } from '@src/screens/MemberScreen';
 import { MoreScreen } from '@src/screens/MoreScreen';
 import { ROUTES } from './routes';
-import { HomeIcon, ProjectIcon, ProfileIcon, TeamIcon, MoreIcon } from '@src/components/Icons';
+import { HomeIcon, ProjectIcon, PersonIcon, TeamIcon, MoreIcon } from '@src/components/Icons';
 import { MemberDetailScreen } from '@src/screens/MemberScreen/MemberScreenDetail';
+import { CreateMemberScreen } from '@src/screens/MemberScreen/CreateMemberScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomStack = createBottomTabNavigator();
@@ -34,6 +35,7 @@ const MemberScreenStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.member}>
     <Stack.Screen name={ROUTES.member} component={MemberScreen} />
     <Stack.Screen name={ROUTES.memberDetail} component={MemberDetailScreen} />
+    <Stack.Screen name={ROUTES.createMember} component={CreateMemberScreen} />
   </Stack.Navigator>
 );
 
@@ -45,7 +47,7 @@ const BottomTabBar = ({ navigation, state }: any) => (
     <BottomNavigationTab icon={HomeIcon} />
     <BottomNavigationTab icon={ProjectIcon} />
     <BottomNavigationTab icon={TeamIcon} />
-    <BottomNavigationTab icon={ProfileIcon} />
+    <BottomNavigationTab icon={PersonIcon} />
     <BottomNavigationTab icon={MoreIcon} />
   </BottomNavigation>
 );

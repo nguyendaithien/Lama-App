@@ -5,7 +5,7 @@ export const BackIcon = (props: any) => <Icon {...props} name="arrow-back" />;
 
 export const HomeIcon = (props: any) => <Icon {...props} name="home-outline" />;
 
-export const ProfileIcon = (props: any) => <Icon {...props} name="person-outline" />;
+export const PersonIcon = (props: any) => <Icon {...props} name="person-outline" />;
 
 export const TeamIcon = (props: any) => <Icon {...props} name="people-outline" />;
 
@@ -31,8 +31,6 @@ export const SearchIcon = (props: any) => (
   <Icon {...props} name="search-outline" animation="shake" />
 );
 
-export const GenderIcon = (props: any) => <Icon {...props} name="gender" pack="assets" />;
-
 export const PlusIcon = (props: any) => <Icon {...props} name="plus-circle-outline" />;
 
 export const FilterIcon = (props: any) => <Icon {...props} name="options-2-outline" />;
@@ -44,3 +42,13 @@ export const UnActiveIcon = (props: any) => <Icon {...props} name="flash-off-out
 export const MessageIcon = (props: any) => <Icon {...props} name="message-circle-outline" />;
 
 export const ClockIcon = (props: any) => <Icon {...props} name="clock-outline" />;
+
+export const EditIcon = (props: any) => <Icon {...props} name="edit-2-outline" />;
+
+export const SaveIcon = (props: any) => <Icon {...props} name="save-outline" />;
+
+//assets icon
+
+export const GenderIcon = (props: any) => <Icon {...props} name="gender" pack="assets" />;
+
+export const EmailIcon = (props: any) => <Icon {...props} name="email" pack="assets" />;

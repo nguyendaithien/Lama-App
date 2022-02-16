@@ -8,6 +8,7 @@ const IconProvider = (source: ImageProps) => ({
 export const AssetIconsPack = {
   name: 'assets',
   icons: {
-    gender: IconProvider(require('@src/assets/images/gender_color.png'))
+    gender: IconProvider(require('@src/assets/images/gender_color.png')),
+    email: IconProvider(require('@src/assets/images/email.png'))
   }
 };

@@ -64,7 +64,8 @@ const themedStyles = StyleService.create({
     marginLeft: 10
   },
   input: {
-    borderRadius: 3
+    borderRadius: 3,
+    marginBottom: 5
   }
 });
 
