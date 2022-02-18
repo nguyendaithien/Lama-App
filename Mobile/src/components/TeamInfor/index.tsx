@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '@ui-kitten/components';
 import React from 'react';
-import { ITeam } from '@src/models/teams';
+import { ITeam } from '@src/models/team';
 import { Layout } from '@ui-kitten/components';
 
 interface ITeamInforProps {
@@ -28,7 +28,7 @@ export const TeamInfor = ({ Icon, onPress, data }: ITeamInforProps) => {
           <Text> - (ID: {`${data.id}`})</Text>
         </Layout>
       </Layout>
-      <Text style={{}}>Created at: {`${data.created_at!.slice(0, 10)}`}</Text>
+      <Text style={{}}>Created at: {`${data.createdAt!.slice(0, 10)}`}</Text>
     </TouchableOpacity>
   );
 };

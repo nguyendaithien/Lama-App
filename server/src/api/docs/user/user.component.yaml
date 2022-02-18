@@ -1,0 +1,95 @@
+components:
+  schemas:
+    UserBasicDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          example: '0949494949'
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+        role:
+          type: string
+          enum:
+            - Admin
+            - Member
+          example: Member
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+
+    PaginatedUsersDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#components/schemas/UserBasicDto'
+        meta:
+          $ref: '#components/schemas/PaginationMetaDto'
+
+    CreateUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 50
+          example: Ricardo
+        lastName:
+          type: string
+          maxLength: 50
+          example: Milos
+        email:
+          type: string
+          maxLength: 100
+          format: email
+        phone:
+          type: string
+          example: '0949494949'
+
+    UpdateUserDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 50
+          example: Ricardo
+        lastName:
+          type: string
+          maxLength: 50
+          example: Milos
+        email:
+          type: string
+          maxLength: 100
+          format: email
+        phone:
+          type: string
+          example: '0949494949'
+
+    ChangeUserStatusDto:
+      type: object
+      properties:
+        isActive:
+          type: boolean

@@ -1,0 +1,590 @@
+paths:
+  /projects/:
+    post:
+      tags:
+        - Project
+      summary: Create new project (by admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectBasicDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+    get:
+      tags:
+        - Project
+      summary: Get all projects (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Search for name
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: >
+            Sort by:
+             * `1` - Oldest project
+             * `2` - Newest project
+             * `3` - Name from A to Z
+             * `4` - Name from Z to A
+             * `5` - Income increase
+             * `6` - Income decrease
+          schema:
+            type: integer
+            enum: [1, 2, 3, 4, 5, 6]
+        - name: status
+          in: query
+          description: >
+            Filter by project status:
+             * `1` - Only canceled projects
+             * `2` - Only in progess projects
+             * `3` - Only completed projects
+          schema:
+            type: number
+            enum: [1, 2, 3]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectsDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+
+  /projects/{projectId}:
+    get:
+      tags:
+        - Project
+      summary: Get information of project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project to view
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    put:
+      tags:
+        - Project
+      summary: Update project information (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      tags:
+        - Project
+      summary: Delete a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project to delete
+      responses:
+        200:
+          description: Success
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+
+  /projects/{projectId}/status/:
+    put:
+      tags:
+        - Project
+      summary: Change status of a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project to change status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeProjectStatusDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+
+  /projects/{projectId}/users:
+    post:
+      tags:
+        - Project
+      summary: Add an user to an existing project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToProjectDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    put:
+      tags:
+        - Project
+      summary: Update an user in a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInProjectDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      tags:
+        - Project
+      summary: Remove an user from a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUserInProjectDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+
+  /projects/{projectId}/costs:
+    post:
+      tags:
+        - Project
+      summary: Add a cost to an existing project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddProjectCostDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+  /projects/{projectId}/costs/{projectCostId}:
+    put:
+      tags:
+        - Project
+      summary: Update a cost in a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+        - in: path
+          name: projectCostId
+          schema:
+            type: integer
+          required: true
+          description: ID of cost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectCostDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      tags:
+        - Project
+      summary: Remove an user from a project (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          schema:
+            type: integer
+          required: true
+          description: ID of project
+        - in: path
+          name: projectCostId
+          schema:
+            type: integer
+          required: true
+          description: ID of cost
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'

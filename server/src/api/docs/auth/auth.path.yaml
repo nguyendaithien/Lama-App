@@ -1,0 +1,97 @@
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterDto'
+      responses:
+        201:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        409:
+          description: Email duplication
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/ConflictDto'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      requestBody:
+        description: Login with email - password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Wrong email/password
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/UnauthorizedDto'
+
+  /auth/password:
+    put:
+      tags:
+        - Auth
+      summary: Change password
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Require old and new password
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBasicDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Not logged in / Wrong old password
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/UnauthorizedDto'

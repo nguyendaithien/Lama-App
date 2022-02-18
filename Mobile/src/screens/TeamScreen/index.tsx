@@ -26,14 +26,19 @@ import {
 import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { teamlist } from '@src/_mocks/teamList';
 import { TeamInfor } from '@src/components/TeamInfor';
+import { useAppSelector } from '@src/hooks/reduxHooks';
 
 export const TeamScreen = () => {
-  const [value, setValue] = React.useState('');
-  const [filterVisible, setFilterVisible] = React.useState(false);
-
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  //root state
+  // const teams = useAppSelector();
+  //screen state
+  const [search, setSearch] = React.useState('');
+  const [filterVisible, setFilterVisible] = React.useState(false);
+
+  //funt handle
   const handleAccessDetail = (idOfDetail: number) => {
     navigationPassID.navigate(ROUTES.teamDetail, { id: idOfDetail });
   };
@@ -41,6 +46,8 @@ export const TeamScreen = () => {
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
+
+  //funt render icon action
   const renderBellAction = () => {
     return (
       <TopNavigationAction icon={BellIcon} onPress={() => navigation.navigate(ROUTES.notice)} />
@@ -51,7 +58,7 @@ export const TeamScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValue('');
+          setSearch('');
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -63,7 +70,7 @@ export const TeamScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValue('');
+          setSearch('');
         }}
       >
         <PlusIcon fill="grey" style={styles.iconBig} />
@@ -101,10 +108,10 @@ export const TeamScreen = () => {
       <Divider />
       <Layout style={styles.searchContainer}>
         <Input
-          value={value}
+          value={search}
           placeholder="Place your Text"
           accessoryRight={renderSearchIconAction}
-          onChangeText={nextValue => setValue(nextValue)}
+          onChangeText={nextValue => setSearch(nextValue)}
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>

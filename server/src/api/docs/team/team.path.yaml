@@ -1,0 +1,428 @@
+paths:
+  /teams/:
+    post:
+      tags:
+        - Team
+      summary: Create new team (by admin)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTeamDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamBasicDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+    get:
+      tags:
+        - Team
+      summary: Get all teams (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Search for name
+          schema:
+            type: string
+        - name: sort
+          in: query
+          description: >
+            Sort by:
+             * `1` - Oldest team
+             * `2` - Newest team
+             * `3` - Name from A to Z
+             * `4` - Name from Z to A
+          schema:
+            type: integer
+            enum: [1, 2, 3, 4]
+        - name: status
+          in: query
+          description: >
+            Filter by team status:
+             * `1` - Only active teams
+             * `2` - Only inactive teams
+          schema:
+            type: number
+            enum: [1, 2]
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeamsDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+
+  /teams/{teamId}:
+    get:
+      tags:
+        - Team
+      summary: Get information of team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team to view
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    put:
+      tags:
+        - Team
+      summary: Update team information (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTeamDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      tags:
+        - Team
+      summary: Delete a team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team to delete
+      responses:
+        200:
+          description: Success
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+
+  /teams/{teamId}/status/:
+    put:
+      tags:
+        - Team
+      summary: Change status of a team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team to change status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeTeamStatusDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+
+  /teams/{teamId}/users:
+    post:
+      tags:
+        - Team
+      summary: Add an user to an existing team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUserToTeamDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    put:
+      tags:
+        - Team
+      summary: Update an user in a team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserInTeamDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'
+    delete:
+      tags:
+        - Team
+      summary: Remove an user from a team (by admin)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: teamId
+          schema:
+            type: integer
+          required: true
+          description: ID of team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteUserInTeamDto'
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamExtendDto'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestDto'
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedDto'
+        403:
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForbiddenDto'
+        404:
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundDto'

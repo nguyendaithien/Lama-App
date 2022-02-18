@@ -6,20 +6,16 @@ import {
   TopNavigationAction,
   Divider,
   useTheme,
-  Button,
-  Select,
-  SelectItem,
-  IndexPath,
-  RadioGroup,
-  Radio
+  Toggle,
+  Avatar
 } from '@ui-kitten/components';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamListPassID } from '@src/navigations/Navigation';
-import { useNavigation, useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StyleSheet, Image, ScrollView, RefreshControl } from 'react-native';
 import {
   PhoneIcon,
-  MailIcon,
+  // MailIcon,
   LocationIcon,
   TeamIcon,
   SaveIcon,
@@ -31,7 +27,7 @@ import {
   PersonIcon
 } from '@src/components/Icons';
 import InputText from '@src/components/InputText';
-import { DataInforRender } from '@src/components/Member';
+// import { DataInforRender } from '@src/components/Member';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import {
   fetchChangeStatusUser,
@@ -60,7 +56,8 @@ export const MemberDetailScreen = () => {
   const [email, setEmail] = useState(userInfor?.email);
   const [phone, setPhone] = useState(userInfor?.phone);
   const [activeStatus, setActiveStatus] = useState(userInfor?.isActive);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  // const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = React.useState(false);
 
   const handleSetValueWhenFetch = useCallback(() => {
     setFirstName(userInfor.firstName);
@@ -68,7 +65,8 @@ export const MemberDetailScreen = () => {
     setEmail(userInfor.email);
     setPhone(userInfor.phone);
     setActiveStatus(userInfor.isActive);
-    setSelectedIndex(userInfor.isActive ? 0 : 1);
+    // setSelectedIndex(userInfor.isActive ? 0 : 1);
+    setSelectedIndex(userInfor.isActive ? true : false);
   }, [
     userInfor.email,
     userInfor.firstName,
@@ -76,6 +74,11 @@ export const MemberDetailScreen = () => {
     userInfor.lastName,
     userInfor.phone
   ]);
+  const onCheckedChange = (isChecked: boolean) => {
+    setSelectedIndex(isChecked);
+    dispatch(fetchChangeStatusUser({ id: memberID, isActive: isChecked }));
+    setActiveStatus(isChecked);
+  };
   //
   useEffect(() => {
     dispatch(fetchGetUserInforByID(memberID));
@@ -119,7 +122,7 @@ export const MemberDetailScreen = () => {
       <Divider />
       <Layout style={styles.avatarContainer}>
         <Layout style={styles.avatar}>
-          <Image
+          <Avatar
             style={[styles.avatar, { resizeMode: 'contain', borderWidth: 0 }]}
             source={{
               uri: userInfor?.avatar
@@ -138,7 +141,7 @@ export const MemberDetailScreen = () => {
           contentContainerStyle={{ justifyContent: 'center' }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-          {isEdit && (
+          {/* {isEdit && (
             <>
               <RadioGroup
                 style={{ marginHorizontal: 10, marginTop: 10 }}
@@ -154,7 +157,12 @@ export const MemberDetailScreen = () => {
                 <Radio>Inactive</Radio>
               </RadioGroup>
             </>
-          )}
+          )} */}
+          <Layout style={{ alignItems: 'center', marginTop: 10 }}>
+            <Toggle checked={selectedIndex} onChange={onCheckedChange}>
+              {`${activeStatus ? 'Active' : 'Inactive'}`}
+            </Toggle>
+          </Layout>
           {isEdit && (
             <>
               <InputText
@@ -218,7 +226,7 @@ export const MemberDetailScreen = () => {
             style={styles.input}
             disabled={true}
             placeholder="Create at"
-            accessoryLeft={TeamIcon}
+            accessoryLeft={ClockIcon}
             value={userInfor?.createdAt?.slice(0, 10)}
             onChangeText={setPhone}
             keyboardType="numeric"

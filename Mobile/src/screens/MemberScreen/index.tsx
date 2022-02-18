@@ -8,7 +8,15 @@ import {
   useTheme,
   Input,
   OverflowMenu,
-  MenuItem
+  MenuItem,
+  Radio,
+  RadioGroup,
+  Modal,
+  Card,
+  Button,
+  IndexPath,
+  Select,
+  SelectItem
 } from '@ui-kitten/components';
 import { StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import {
@@ -23,10 +31,20 @@ import {
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import { MemberCard } from '@src/components/Member';
 import { fetchGetUserInforByID, fetchGetUsers } from '@src/features/user/userSlice';
+
+//data show filter
+const sortOption = [
+  'No',
+  'Oldest user',
+  'Newest user',
+  'First name from A to Z',
+  'First name from Z to A'
+];
+const statusOption = ['No', 'Only active users', 'Only inactive users'];
 
 export const MemberScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
@@ -36,34 +54,33 @@ export const MemberScreen = () => {
   //state
   const [filterVisible, setFilterVisible] = React.useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [paramGetUsers, setParamGetUsers] = React.useState({
-    page: 1,
-    limit: 100,
-    search: '',
-    sort: null,
-    status: null
-  });
   //state query
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(100);
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [sort, setSort] = useState<number | null>(null);
+  const [status, setStatus] = useState<number | null>(null);
+
+  //screen state
+  const [selectedIndexFilterSort, setSelectedIndexFilterSort] = useState(new IndexPath(0));
+  const [selectedIndexFilterStatus, setSelectedIndexFilterStatus] = useState(new IndexPath(0));
+  const [visible, setVisible] = useState(false);
   //redux state
   const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
   const users = useAppSelector(state => state.user.users);
 
   //
   useEffect(() => {
-    dispatch(fetchGetUsers({ page, limit, search, sort, status }));
-  }, [dispatch, limit, page, paramGetUsers, search, sort, status]);
+    dispatch(fetchGetUsers({ page: 1, limit: 100, search, sort: null, status: null }));
+  }, [dispatch, search]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    dispatch(fetchGetUsers(paramGetUsers));
+    dispatch(fetchGetUsers({ page, limit, search, sort, status }));
     !isLoading && setRefreshing(false);
-  }, [dispatch, paramGetUsers, isLoading]);
-  //
+  }, [dispatch, page, limit, search, sort, status, isLoading]);
+
+  //funct handle
   const handleAccessDetail = (idOfDetail: number) => {
     navigationPassID.navigate(ROUTES.memberDetail, { id: idOfDetail });
   };
@@ -71,6 +88,8 @@ export const MemberScreen = () => {
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
+  const displayValueSortFilter = sortOption[selectedIndexFilterSort.row];
+  const displayValueStatusFilter = statusOption[selectedIndexFilterStatus.row];
 
   //render Icon Action
   const renderBellAction = () => {
@@ -109,26 +128,14 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           toggleFilter();
+          setVisible(true);
         }}
       >
         <FilterIcon fill="grey" style={styles.icon} />
       </TouchableOpacity>
     );
   };
-  const RenderRightActions = () => {
-    return (
-      <Layout>
-        <OverflowMenu
-          anchor={FilterIconAction}
-          visible={filterVisible}
-          onBackdropPress={toggleFilter}
-        >
-          <MenuItem accessoryLeft={ActiveIcon} title="Active" />
-          <MenuItem accessoryLeft={UnActiveIcon} title="Inactive" />
-        </OverflowMenu>
-      </Layout>
-    );
-  };
+
   return (
     <Layout style={styles.container}>
       <TopNavigation alignment="center" title="Members" accessoryRight={renderBellAction} />
@@ -144,8 +151,62 @@ export const MemberScreen = () => {
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
             Number of Members: {`${users?.length ? users?.length : 0}`}
           </Text>
-          <RenderRightActions />
+          <FilterIconAction />
         </Layout>
+        <Modal
+          visible={visible}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setVisible(false)}
+        >
+          <Card disabled={true} style={{ width: 350 }}>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Sort
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              value={displayValueSortFilter}
+              selectedIndex={selectedIndexFilterSort}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                console.log(index);
+                setSelectedIndexFilterSort(indexSelect);
+                setSort(indexSelect.row);
+              }}
+            >
+              {sortOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Status
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              selectedIndex={selectedIndexFilterStatus}
+              value={displayValueStatusFilter}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                // console.log(index);
+                setSelectedIndexFilterStatus(indexSelect);
+                setStatus(indexSelect.row);
+              }}
+            >
+              {statusOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+
+            <Button
+              style={{ marginTop: 5 }}
+              onPress={() => {
+                setVisible(false);
+                dispatch(fetchGetUsers({ page, limit, search, sort, status }));
+              }}
+            >
+              SUBMIT
+            </Button>
+          </Card>
+        </Modal>
       </Layout>
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
         <ScrollView
@@ -206,5 +267,8 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     paddingHorizontal: 20,
     justifyContent: 'space-between'
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   }
 });
