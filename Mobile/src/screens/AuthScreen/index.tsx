@@ -67,7 +67,7 @@ export const LoginScreen = () => {
   );
 
   const handleLoginButton = async () => {
-    dispatch(fetchLogin({ email: username, password: password }));
+    dispatch(fetchLogin({ email: username, password: password, remember: true }));
   };
 
   return (

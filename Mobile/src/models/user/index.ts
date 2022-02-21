@@ -42,7 +42,7 @@ export type IUserBodyRequestCreate = {
   phone?: string;
 };
 
-export type IUpdateStatusUser = {
+export type ITeamUpdateStatusUser = {
   id?: number;
   isActive?: boolean;
 };

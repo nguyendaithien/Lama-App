@@ -1,5 +1,5 @@
 import { API_ENDPOINT } from '@env';
-import { IUserBodyRequest, IUpdateStatusUser, IParamGetUsers } from '@src/models/user';
+import { IUserBodyRequest, ITeamUpdateStatusUser, IParamGetUsers } from '@src/models/user';
 import { axiosRequest, cleanObject } from '@src/utils/requestServerUtil';
 
 class UserAPI {
@@ -13,7 +13,7 @@ class UserAPI {
     return axiosRequest(this.userAPIEndpoint + 'me', null, 'GET', token);
   }
 
-  getUsers(token: string, param: IParamGetUsers) {
+  getUsers(token: string, param: IParamGetUsers | null) {
     return axiosRequest(this.userAPIEndpoint, param, 'GET', token);
   }
 
@@ -36,7 +36,7 @@ class UserAPI {
       cleanObject(validKeys, data)
     );
   }
-  changeStatusUser(token: string, data: IUpdateStatusUser) {
+  changeStatusUser(token: string, data: ITeamUpdateStatusUser) {
     const validKeys = ['isActive'];
     return axiosRequest(
       this.userAPIEndpoint + '/status/' + `${data!.id}`,

@@ -4,7 +4,7 @@ import userAPI from './userAPI';
 import { getToken } from '@src/utils/tokenUtil';
 import {
   IUserBodyRequest,
-  IUpdateStatusUser,
+  ITeamUpdateStatusUser,
   IParamGetUsers,
   IUser,
   IUserBodyRequestCreate
@@ -83,7 +83,7 @@ export const fetchGetAdminInfor = createAsyncThunk(
 
 export const fetchGetUsers = createAsyncThunk(
   'user/fetchGetUsers',
-  async (param: IParamGetUsers, { rejectWithValue }) => {
+  async (param: IParamGetUsers | null, { rejectWithValue }) => {
     try {
       const token = await getToken();
       const response = await userAPI.getUsers(token, param);
@@ -135,7 +135,7 @@ export const fetchUpdateUser = createAsyncThunk(
 
 export const fetchChangeStatusUser = createAsyncThunk(
   'user/fetchChangeStatusUser',
-  async (payload: IUpdateStatusUser, { rejectWithValue }) => {
+  async (payload: ITeamUpdateStatusUser, { rejectWithValue }) => {
     try {
       const token = await getToken();
       const response = await userAPI.changeStatusUser(token, payload);
@@ -232,7 +232,7 @@ export const userSlice = createSlice({
         state.fetchUpdateUserMsg = null;
       })
 
-      //handle update user
+      //handle change status user
       .addCase(fetchChangeStatusUser.rejected, (state, action) => {
         state.user = {};
         state.isChangingStatusUser = false;

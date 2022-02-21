@@ -15,41 +15,48 @@ import {
   Card
 } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native';
-import { EditIcon, PersonIcon, BackIcon, EmailIcon, PhoneIcon } from '@src/components/Icons';
+import { MessageIcon, BackIcon, TeamIcon } from '@src/components/Icons';
 import InputText from '@src/components/InputText';
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
-import {
-  fetchGetUserInforByID,
-  fetchGetUsers,
-  fetchCreateNewUser
-} from '@src/features/user/userSlice';
 import MESSAGES from '@src/configs/constant/messages';
+import { fetchCreateNewTeam, selectCreateNewUserMsg } from '@src/features/team/teamSlice';
 
-export const CreateMemberScreen = () => {
+export const CreateTeamScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
   //root state
   // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
-  const isCreatingNewUser = useAppSelector(state => state.user.isCreatingNewUser);
+  const isCreatingNewTeam = useAppSelector(state => state.user.isCreatingNewUser);
+  const [createNewTeamMsg, setCreateNewTeamMsg] = useState(
+    useAppSelector(state => state.team.fetchCreateNewTeamMsg)
+  );
+  // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
   //screen state
   const [modalStatus, setModalStatus] = useState<boolean>(false);
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [teamName, setTeamName] = useState<string>('');
+  const [teamDescription, setTeamDescription] = useState<string>('');
   const [isShowingError, setIsShowingError] = useState(false);
-  const [createNewUserMsgRootState, setCreateNewUserMsgRootState] = useState(
-    useAppSelector(state => state.user.fetchCreateNewUserMsg)
-  );
-
   const navigateBack = () => {
     navigationPassID.goBack();
   };
+  async function getFetchCreateTeam() {
+    try {
+      await dispatch(fetchCreateNewTeam({ name: teamName, description: teamDescription }));
+      createNewTeamMsg === MESSAGES.CREATE_SUCCESS && setModalStatus(true);
+      createNewTeamMsg === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
+      setIsShowingError(true);
+      setTimeout(() => {
+        setIsShowingError(false);
+        setCreateNewTeamMsg(null);
+      }, 6000);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const BackAction = () => <TopNavigationAction icon={BackIcon} onPress={navigateBack} />;
 
   const SubmitBotton = () => {
@@ -68,40 +75,29 @@ export const CreateMemberScreen = () => {
       </Layout>
     );
   };
-  async function getFetchCreateTeam() {
-    try {
-      await dispatch(fetchCreateNewUser({ email, firstName, lastName, phone: phoneNumber }));
-      createNewUserMsgRootState === MESSAGES.CREATE_SUCCESS && setModalStatus(true);
-      createNewUserMsgRootState === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
-      // setCreateNewUserMsg(createNewUserMsgRootState);
-      setIsShowingError(true);
-      setTimeout(() => {
-        setIsShowingError(false);
-      }, 6000);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
   const handleDetectFullFill = () => {
-    return firstName && lastName && email && phoneNumber ? true : false;
+    return teamName && teamDescription ? true : false;
   };
 
+  const handleDetectEmptyInfor = () => {
+    return !teamName && !teamDescription ? true : false;
+  };
+  // const handleMessageCreate = () => {
+  //   setFetchCreateNewUserMsg(useAppSelector(state => state.user.fetchCreateNewUserMsg));
+  //   return;
+  // };
   const HandleShowError = () => {
     return (
-      <Layout style={{ alignItems: 'center', marginVertical: 10 }}>
-        <Text
-          style={{ fontStyle: 'italic' }}
-          status={'danger'}
-        >{`${createNewUserMsgRootState}`}</Text>
+      <Layout style={{ alignItems: 'center', marginTop: 10 }}>
+        <Text style={{ fontStyle: 'italic' }} status={'danger'}>{`${createNewTeamMsg}`}</Text>
       </Layout>
     );
   };
 
   const handleCleanPlaceHolder = () => {
-    setFirstName('');
-    setLastName('');
-    setEmail('');
-    setPhoneNumber('');
+    setTeamName('');
+    setTeamDescription('');
   };
 
   return (
@@ -115,36 +111,21 @@ export const CreateMemberScreen = () => {
           </Text>
         </Layout>
         <InputText
-          label="Fullname"
-          placeholder="First name"
-          accessoryLeft={PersonIcon}
+          label="Name: "
+          placeholder="Name of team"
+          accessoryLeft={TeamIcon}
           secureTextEntry={false}
-          value={firstName}
-          onChangeText={setFirstName}
+          value={teamName}
+          onChangeText={setTeamName}
           keyboardType="default"
         />
         <InputText
-          placeholder="Last name"
-          accessoryLeft={PersonIcon}
-          value={lastName}
-          onChangeText={setLastName}
+          label="Description: "
+          placeholder="Description"
+          accessoryLeft={MessageIcon}
+          value={teamDescription}
+          onChangeText={setTeamDescription}
           keyboardType="default"
-        />
-        <InputText
-          label="Email"
-          placeholder="Email"
-          accessoryLeft={EmailIcon}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-        <InputText
-          label="Phone number"
-          placeholder="Phone number"
-          accessoryLeft={PhoneIcon}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          keyboardType="numeric"
         />
       </Layout>
       {modalStatus && (
@@ -154,9 +135,10 @@ export const CreateMemberScreen = () => {
             backdropStyle={styles.backdrop}
             onBackdropPress={() => setModalStatus(false)}
           >
-            <Card disabled={true} style={{ width: 350, borderRadius: 10 }}>
-              {/* <Text style={{ marginBottom: 10 }}>{`${createNewUserMsgRootState}`}</Text> */}
-              <HandleShowError />
+            <Card disabled={true}>
+              <Layout style={{ alignItems: 'center' }}>
+                <Text style={{ marginBottom: 10 }}>{`${createNewTeamMsg}`}</Text>
+              </Layout>
               <Button
                 style={{ marginBottom: 10 }}
                 onPress={() => {
@@ -164,7 +146,8 @@ export const CreateMemberScreen = () => {
                   handleCleanPlaceHolder();
                 }}
               >
-                ADD MORE USER
+                ADD MORE TEAM
+                {/* OKE */}
               </Button>
               <Button
                 onPress={() => {
@@ -172,18 +155,17 @@ export const CreateMemberScreen = () => {
                   navigateBack();
                 }}
               >
-                BACK TO USERS SCREEN
+                BACK TO TEAMS SCREEN
               </Button>
             </Card>
           </Modal>
         </Layout>
       )}
       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-        {isCreatingNewUser && <Spinner status="primary" />}
+        {isCreatingNewTeam && <Spinner status="primary" />}
       </Layout>
       {handleDetectFullFill() && <SubmitBotton />}
       {isShowingError && <HandleShowError />}
-      {/* {myTimeout} */}
     </Layout>
   );
 };

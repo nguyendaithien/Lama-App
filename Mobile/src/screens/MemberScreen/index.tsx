@@ -5,12 +5,7 @@ import {
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
   Input,
-  OverflowMenu,
-  MenuItem,
-  Radio,
-  RadioGroup,
   Modal,
   Card,
   Button,
@@ -34,7 +29,7 @@ import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/N
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import { MemberCard } from '@src/components/Member';
-import { fetchGetUserInforByID, fetchGetUsers } from '@src/features/user/userSlice';
+import { fetchGetUsers } from '@src/features/user/userSlice';
 
 //data show filter
 const sortOption = [
@@ -51,9 +46,12 @@ export const MemberScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
 
-  //state
-  const [filterVisible, setFilterVisible] = React.useState(false);
-  const [refreshing, setRefreshing] = React.useState(false);
+  //redux state
+  const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
+  const users = useAppSelector(state => state.user.users);
+
+  //SCREEN STATE
+
   //state query
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(100);
@@ -61,13 +59,12 @@ export const MemberScreen = () => {
   const [sort, setSort] = useState<number | null>(null);
   const [status, setStatus] = useState<number | null>(null);
 
-  //screen state
+  //filter state
+  const [filterVisible, setFilterVisible] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
   const [selectedIndexFilterSort, setSelectedIndexFilterSort] = useState(new IndexPath(0));
   const [selectedIndexFilterStatus, setSelectedIndexFilterStatus] = useState(new IndexPath(0));
   const [visible, setVisible] = useState(false);
-  //redux state
-  const isLoading = useAppSelector(state => state.user.isFetchingGetUsers);
-  const users = useAppSelector(state => state.user.users);
 
   //
   useEffect(() => {
@@ -101,9 +98,7 @@ export const MemberScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log('hello');
           dispatch(fetchGetUsers({ page, limit, search, sort, status }));
-          setSearch('');
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -115,7 +110,6 @@ export const MemberScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setSearch('');
           navigation.navigate(ROUTES.createMember);
         }}
       >

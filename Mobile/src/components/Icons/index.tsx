@@ -47,6 +47,12 @@ export const EditIcon = (props: any) => <Icon {...props} name="edit-2-outline" /
 
 export const SaveIcon = (props: any) => <Icon {...props} name="save-outline" />;
 
+export const TeamLeaderIcon = (props: any) => <Icon {...props} name="smiling-face-outline" />;
+
+export const DeleteIcon2 = (props: any) => <Icon {...props} name="trash-outline" />;
+
+export const DeleteIcon = (props: any) => <Icon {...props} name="minus-circle-outline" />;
+
 //assets icon
 
 export const GenderIcon = (props: any) => <Icon {...props} name="gender" pack="assets" />;

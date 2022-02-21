@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Layout,
   Text,
@@ -8,8 +8,15 @@ import {
   useTheme,
   Input,
   OverflowMenu,
-  MenuItem
+  MenuItem,
+  Modal,
+  Card,
+  Button,
+  IndexPath,
+  Select,
+  SelectItem
 } from '@ui-kitten/components';
+import { StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
@@ -20,32 +27,62 @@ import {
   PlusIcon,
   SearchIcon,
   ActiveIcon,
-  UnActiveIcon,
-  TeamIcon
+  UnActiveIcon
 } from '@src/components/Icons';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { teamlist } from '@src/_mocks/teamList';
-import { TeamInfor } from '@src/components/TeamInfor';
-import { useAppSelector } from '@src/hooks/reduxHooks';
+import { TeamInforCard } from '@src/components/Team';
+import { useAppSelector, useAppDispatch } from '@src/hooks/reduxHooks';
+import { fetchGetTeams } from '@src/features/team/teamSlice';
+
+//data show filter
+const sortOption = ['No', 'Oldest team', 'Newest team', 'Name from A to Z', 'Name from Z to A'];
+const statusOption = ['No', 'Only active teams', 'Only inactive teams'];
 
 export const TeamScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch();
 
-  //root state
-  // const teams = useAppSelector();
-  //screen state
-  const [search, setSearch] = React.useState('');
+  //ROOT STATE
+  const teams = useAppSelector(state => state.team.teams);
+  const isFetching = useAppSelector(state => state.team.isFetchingGetTeams);
+
+  //param state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(100);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<number | null>(null);
+  const [status, setStatus] = useState<number | null>(null);
+
+  //filter state
   const [filterVisible, setFilterVisible] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [selectedIndexFilterSort, setSelectedIndexFilterSort] = useState(new IndexPath(0));
+  const [selectedIndexFilterStatus, setSelectedIndexFilterStatus] = useState(new IndexPath(0));
+  const [visible, setVisible] = useState(false);
+
+  //
+  useEffect(() => {
+    dispatch(fetchGetTeams({ page: 1, limit: 100, search, sort: null, status: null }));
+  }, [dispatch, search]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+    !isFetching && setRefreshing(false);
+  }, [dispatch, page, limit, search, sort, status, isFetching]);
 
   //funt handle
   const handleAccessDetail = (idOfDetail: number) => {
+    console.log(idOfDetail);
     navigationPassID.navigate(ROUTES.teamDetail, { id: idOfDetail });
   };
 
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
   };
+
+  const displayValueSortFilter = sortOption[selectedIndexFilterSort.row];
+  const displayValueStatusFilter = statusOption[selectedIndexFilterStatus.row];
 
   //funt render icon action
   const renderBellAction = () => {
@@ -57,8 +94,7 @@ export const TeamScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log('hello');
-          setSearch('');
+          dispatch(fetchGetTeams({ page, limit, search, sort, status }));
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -70,7 +106,7 @@ export const TeamScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setSearch('');
+          navigation.navigate(ROUTES.createTeam);
         }}
       >
         <PlusIcon fill="grey" style={styles.iconBig} />
@@ -82,6 +118,7 @@ export const TeamScreen = () => {
       <TouchableOpacity
         onPress={() => {
           toggleFilter();
+          setVisible(true);
         }}
       >
         <FilterIcon fill="grey" style={styles.icon} />
@@ -115,22 +152,70 @@ export const TeamScreen = () => {
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
-            Number of Teams: {`${teamlist.length}`}
+            Number of Teams: {`${teams.length}`}
           </Text>
-          <RenderRightActions />
+          <FilterIconAction />
         </Layout>
+        <Modal
+          visible={visible}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setVisible(false)}
+        >
+          <Card disabled={true} style={{ width: 350, borderRadius: 10 }}>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Sort
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              value={displayValueSortFilter}
+              selectedIndex={selectedIndexFilterSort}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                setSelectedIndexFilterSort(indexSelect);
+                setSort(indexSelect.row);
+              }}
+            >
+              {sortOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Status
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              selectedIndex={selectedIndexFilterStatus}
+              value={displayValueStatusFilter}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                setSelectedIndexFilterStatus(indexSelect);
+                setStatus(indexSelect.row);
+              }}
+            >
+              {statusOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+
+            <Button
+              style={{ marginTop: 5 }}
+              onPress={() => {
+                setVisible(false);
+                dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+              }}
+            >
+              SUBMIT
+            </Button>
+          </Card>
+        </Modal>
       </Layout>
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
-        <ScrollView contentContainerStyle={styles.teamList}>
-          {teamlist.map((item, index) => {
-            return (
-              <TeamInfor
-                Icon={<TeamIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />}
-                key={index}
-                data={item}
-                onPress={handleAccessDetail}
-              />
-            );
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          contentContainerStyle={styles.teamList}
+        >
+          {teams.map((item, index) => {
+            return <TeamInforCard key={index} data={item} onPress={handleAccessDetail} />;
           })}
         </ScrollView>
       </Layout>
@@ -170,5 +255,8 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     paddingHorizontal: 20,
     justifyContent: 'space-between'
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   }
 });

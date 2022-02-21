@@ -13,6 +13,7 @@ import { ROUTES } from './routes';
 import { HomeIcon, ProjectIcon, PersonIcon, TeamIcon, MoreIcon } from '@src/components/Icons';
 import { MemberDetailScreen } from '@src/screens/MemberScreen/MemberScreenDetail';
 import { CreateMemberScreen } from '@src/screens/MemberScreen/CreateMemberScreen';
+import { CreateTeamScreen } from '@src/screens/TeamScreen/CreateTeamScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomStack = createBottomTabNavigator();
@@ -28,6 +29,8 @@ const TeamScreenStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.team}>
     <Stack.Screen name={ROUTES.team} component={TeamScreen} />
     <Stack.Screen name={ROUTES.teamDetail} component={TeamDetailScreen} />
+    <Stack.Screen name={ROUTES.memberDetail} component={MemberDetailScreen} />
+    <Stack.Screen name={ROUTES.createTeam} component={CreateTeamScreen} />
   </Stack.Navigator>
 );
 

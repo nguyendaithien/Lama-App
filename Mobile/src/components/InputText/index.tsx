@@ -15,6 +15,7 @@ type Props = {
   status?: string;
   size?: string;
   label?: string;
+  editable?: boolean;
   keyboardType?: KeyboardTypeOptions;
   onChangeText?: (text: string) => void;
   onBlur?: (event: NativeSyntheticEvent<TextInputFocusEventData>) => void;
@@ -52,6 +53,7 @@ const InputText = ({
         status={status}
         size={size}
         keyboardType={keyboardType}
+        // editable={editable}
       />
     </>
   );

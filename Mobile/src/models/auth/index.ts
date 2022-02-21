@@ -1,7 +1,7 @@
 export type ILoginBody = {
   email: string;
   password: string;
-  remember?: 1 | 0;
+  remember?: true | false;
 };
 
 export type IChangePasswordBody = {

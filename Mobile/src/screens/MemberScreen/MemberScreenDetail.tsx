@@ -46,10 +46,10 @@ export const MemberDetailScreen = () => {
   //rootstate
 
   const userInfor = useAppSelector(selectUserInfor);
-  const isLoading = useAppSelector(state => state.user.isFetchingGetUserInforByID);
+  const isLoadingFetchUserInfor = useAppSelector(state => state.user.isFetchingGetUserInforByID);
 
   //screen state
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [firstName, setFirstName] = useState(userInfor?.firstName);
   const [lastName, setLastName] = useState(userInfor?.lastName);
@@ -57,7 +57,7 @@ export const MemberDetailScreen = () => {
   const [phone, setPhone] = useState(userInfor?.phone);
   const [activeStatus, setActiveStatus] = useState(userInfor?.isActive);
   // const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [selectedIndex, setSelectedIndex] = React.useState(false);
+  const [selectedStatusActive, setSelectedStatusActive] = useState(false);
 
   const handleSetValueWhenFetch = useCallback(() => {
     setFirstName(userInfor.firstName);
@@ -66,7 +66,7 @@ export const MemberDetailScreen = () => {
     setPhone(userInfor.phone);
     setActiveStatus(userInfor.isActive);
     // setSelectedIndex(userInfor.isActive ? 0 : 1);
-    setSelectedIndex(userInfor.isActive ? true : false);
+    setSelectedStatusActive(userInfor.isActive ? true : false);
   }, [
     userInfor.email,
     userInfor.firstName,
@@ -75,7 +75,7 @@ export const MemberDetailScreen = () => {
     userInfor.phone
   ]);
   const onCheckedChange = (isChecked: boolean) => {
-    setSelectedIndex(isChecked);
+    setSelectedStatusActive(isChecked);
     dispatch(fetchChangeStatusUser({ id: memberID, isActive: isChecked }));
     setActiveStatus(isChecked);
   };
@@ -89,8 +89,8 @@ export const MemberDetailScreen = () => {
     setRefreshing(true);
     handleSetValueWhenFetch();
     dispatch(fetchGetUserInforByID(memberID));
-    !isLoading && setRefreshing(false);
-  }, [dispatch, handleSetValueWhenFetch, isLoading, memberID]);
+    !isLoadingFetchUserInfor && setRefreshing(false);
+  }, [dispatch, handleSetValueWhenFetch, isLoadingFetchUserInfor, memberID]);
 
   //renderIconAction
   const renderEditAction = () => {
@@ -141,25 +141,8 @@ export const MemberDetailScreen = () => {
           contentContainerStyle={{ justifyContent: 'center' }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
         >
-          {/* {isEdit && (
-            <>
-              <RadioGroup
-                style={{ marginHorizontal: 10, marginTop: 10 }}
-                selectedIndex={selectedIndex}
-                onChange={index => {
-                  console.log(activeStatus);
-                  dispatch(fetchChangeStatusUser({ id: memberID, isActive: !activeStatus }));
-                  setActiveStatus(!activeStatus);
-                  setSelectedIndex(index);
-                }}
-              >
-                <Radio>Active</Radio>
-                <Radio>Inactive</Radio>
-              </RadioGroup>
-            </>
-          )} */}
           <Layout style={{ alignItems: 'center', marginTop: 10 }}>
-            <Toggle checked={selectedIndex} onChange={onCheckedChange}>
+            <Toggle checked={selectedStatusActive} onChange={onCheckedChange}>
               {`${activeStatus ? 'Active' : 'Inactive'}`}
             </Toggle>
           </Layout>
@@ -228,7 +211,6 @@ export const MemberDetailScreen = () => {
             placeholder="Create at"
             accessoryLeft={ClockIcon}
             value={userInfor?.createdAt?.slice(0, 10)}
-            onChangeText={setPhone}
             keyboardType="numeric"
           />
         </ScrollView>

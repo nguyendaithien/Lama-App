@@ -161,3 +161,6 @@ export const customDarkTheme = {
   'color-linear-primary': '#219653',
   'color-linear-secondary': '#6FCF97'
 };
+
+export const activeStatusCard = customLightTheme['color-primary-400'];
+export const inActiveStatusCard = customLightTheme['color-primary-transparent-300'];

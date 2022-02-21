@@ -129,6 +129,6 @@ export default class UserService {
 
   public static generateAvatar(firstName: string, lastName = '') {
     const str = slugify(firstName + ' ' + lastName);
-    return `https://avatars.dicebear.com/api/micah/${str}.png`;
+    return `https://avatars.dicebear.com/api/avataaars/${str}.png`;
   }
 }

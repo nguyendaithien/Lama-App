@@ -110,6 +110,7 @@ export default class TeamService {
     if (!team) {
       throw new NotFoundException('deleteTeam', 'Team not found');
     }
+    await this.userTeamRepository.delete({ team });
 
     return this.teamRepository.softRemove(team);
   }
@@ -120,7 +121,7 @@ export default class TeamService {
       throw new NotFoundException('addUserToTeam', 'User not found');
     }
 
-    const team = await this.findOne(teamId);
+    let team = await this.findOne(teamId);
     if (!team) {
       throw new NotFoundException('addUserToTeam', 'Team not found');
     }
@@ -134,10 +135,22 @@ export default class TeamService {
     newUserTeam.team = team;
     newUserTeam.isOwner = addUserToTeamDto.isOwner || false;
     newUserTeam.role = addUserToTeamDto.role;
-
     await this.userTeamRepository.save(newUserTeam);
 
-    return this.findOne(teamId);
+    team = await this.findOne(teamId);
+    if (addUserToTeamDto.isOwner) {
+      team.userTeams = team.userTeams.map(userTeam => {
+        if (userTeam.user.id !== addUserToTeamDto.userId) {
+          return {
+            ...userTeam,
+            isOwner: false,
+          };
+        }
+        return userTeam;
+      });
+    }
+    await this.teamRepository.save(team);
+    return team;
   }
 
   public async updateUserInTeam(teamId, updateUserInTeamDto: UpdateUserInTeamDto) {
@@ -162,6 +175,9 @@ export default class TeamService {
           role: updateUserInTeamDto.role,
           isOwner: updateUserInTeamDto.isOwner,
         };
+      }
+      if (updateUserInTeamDto.isOwner) {
+        return { ...userTeam, isOwner: false };
       }
       return userTeam;
     });

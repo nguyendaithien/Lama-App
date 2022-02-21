@@ -12,6 +12,7 @@ export const ROUTES = {
   teamStack: 'Team Stack',
   team: 'Team',
   teamDetail: 'Team Detail',
+  createTeam: 'Create Team',
   memberStack: 'Member Stack',
   member: 'Member',
   memberDetail: 'Member Detail',

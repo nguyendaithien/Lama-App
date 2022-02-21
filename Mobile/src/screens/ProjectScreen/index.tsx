@@ -25,7 +25,7 @@ import {
 } from '@src/components/Icons';
 import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { teamlist } from '@src/_mocks/teamList';
-import { TeamInfor } from '@src/components/TeamInfor';
+import { TeamInforCard } from '@src/components/Team';
 
 export const ProjectScreen = () => {
   const [value, setValue] = React.useState('');
@@ -116,14 +116,7 @@ export const ProjectScreen = () => {
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
         <ScrollView contentContainerStyle={styles.teamList}>
           {teamlist.map((item, index) => {
-            return (
-              <TeamInfor
-                Icon={<TeamIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />}
-                key={index}
-                data={item}
-                onPress={handleAccessDetail}
-              />
-            );
+            return <TeamInforCard key={index} data={item} onPress={handleAccessDetail} />;
           })}
         </ScrollView>
       </Layout>
