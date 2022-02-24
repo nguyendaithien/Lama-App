@@ -39,7 +39,13 @@ export const MemberCardMiniAddUserToTeam = ({
   onPress
 }: IMemberCardMiniAddUserToTeamProps) => {
   return (
-    <TouchableOpacity style={[styles.memberMiniCardContainer]} onPress={() => onPress(Data.id!)}>
+    <TouchableOpacity
+      style={[
+        styles.memberMiniCardContainer,
+        !Data.isActive && { backgroundColor: inActiveStatusCard }
+      ]}
+      onPress={() => onPress(Data.id!)}
+    >
       <Layout
         style={{
           flexDirection: 'row',
@@ -62,7 +68,8 @@ export const MemberCardMiniChangeLeader = ({ Data, onPress }: IMemberCardMiniPro
     <TouchableOpacity
       style={[
         styles.memberMiniCardContainer,
-        Data.isOwner && { backgroundColor: theme['color-primary-600'] }
+        Data.isOwner && { backgroundColor: theme['color-primary-600'] },
+        !user?.isActive && { backgroundColor: inActiveStatusCard }
       ]}
       onPress={() => onPress(user?.id!)}
     >
@@ -81,6 +88,37 @@ export const MemberCardMiniChangeLeader = ({ Data, onPress }: IMemberCardMiniPro
   );
 };
 
+export const MemberCardMiniAddUserToProject = ({ Data, onPress }: IMemberCardMiniProps) => {
+  const theme = useTheme();
+  const user = Data.user;
+  return (
+    <TouchableOpacity
+      style={[
+        styles.memberMiniCardContainer,
+        Data.isOwner && { backgroundColor: theme['color-primary-600'] },
+        !user?.isActive && { backgroundColor: inActiveStatusCard }
+      ]}
+      onPress={() => onPress(user?.id!)}
+    >
+      <Layout
+        style={{
+          flexDirection: 'row',
+          backgroundColor: 'transparent',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Layout style={{ backgroundColor: 'transparent', justifyContent: 'center' }}>
+          <Text style={{ fontStyle: 'italic' }}>
+            {' '}
+            {`${user?.firstName} ${user?.lastName} - (${
+              Data.isOwner === true ? 'Leader' : 'Member'
+            })`}
+          </Text>
+        </Layout>
+      </Layout>
+    </TouchableOpacity>
+  );
+};
 export const MemberCardMini = ({ teamID, Data, onPress }: IMemberCardMiniProps) => {
   const theme = useTheme();
   const user = Data.user;

@@ -9,6 +9,7 @@ export const AssetIconsPack = {
   name: 'assets',
   icons: {
     gender: IconProvider(require('@src/assets/images/gender_color.png')),
-    email: IconProvider(require('@src/assets/images/email.png'))
+    email: IconProvider(require('@src/assets/images/email.png')),
+    money: IconProvider(require('@src/assets/images/money.png'))
   }
 };

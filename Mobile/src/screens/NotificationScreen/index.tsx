@@ -29,7 +29,9 @@ export const NotificationScreen = () => {
         accessoryLeft={BackAction}
       />
       <Divider />
-      <Text>Hello, I'm Khanh 411 Lib</Text>
+      <Layout style={{ alignItems: 'center', marginTop: 20 }}>
+        <Text>Hello, I'm Khanh 411 Lib</Text>
+      </Layout>
     </Layout>
   );
 };

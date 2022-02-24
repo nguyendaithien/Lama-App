@@ -20,7 +20,7 @@ import {
   PlusIcon,
   SearchIcon,
   ActiveIcon,
-  UnActiveIcon,
+  InactiveIcon,
   PersonIcon
 } from '@src/components/Icons';
 import { ROUTES } from '@src/navigations/routes';
@@ -209,16 +209,7 @@ export const MemberScreen = () => {
         >
           {users?.length ? (
             users.map((item, index) => {
-              return (
-                <MemberCard
-                  Icon={
-                    <PersonIcon fill={'grey'} style={{ height: 25, width: 25, marginRight: 10 }} />
-                  }
-                  key={index}
-                  Data={item}
-                  onPress={handleAccessDetail}
-                />
-              );
+              return <MemberCard key={index} Data={item} onPress={handleAccessDetail} />;
             })
           ) : (
             <Text />

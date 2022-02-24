@@ -14,6 +14,10 @@ import { HomeIcon, ProjectIcon, PersonIcon, TeamIcon, MoreIcon } from '@src/comp
 import { MemberDetailScreen } from '@src/screens/MemberScreen/MemberScreenDetail';
 import { CreateMemberScreen } from '@src/screens/MemberScreen/CreateMemberScreen';
 import { CreateTeamScreen } from '@src/screens/TeamScreen/CreateTeamScreen';
+import { CreateProjectScreen } from '@src/screens/ProjectScreen/CreateProjectScreen';
+import { AddUserToProjectScreen } from '@src/screens/ProjectScreen/AddUserToProjectScreen';
+import { AddCostToProjectScreen } from '@src/screens/ProjectScreen/AddCostToProjectScreen';
+// import { EditUserFromProjectScreen } from '@src/screens/ProjectScreen/EditUserFromProjectScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomStack = createBottomTabNavigator();
@@ -21,7 +25,12 @@ const BottomStack = createBottomTabNavigator();
 const ProjectScreenStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={ROUTES.project}>
     <Stack.Screen name={ROUTES.project} component={ProjectScreen} />
-    <Stack.Screen name={ROUTES.teamDetail} component={ProjectDetailScreen} />
+    <Stack.Screen name={ROUTES.projectDetail} component={ProjectDetailScreen} />
+    <Stack.Screen name={ROUTES.projectCreate} component={CreateProjectScreen} />
+    <Stack.Screen name={ROUTES.memberDetail} component={MemberDetailScreen} />
+    <Stack.Screen name={ROUTES.projectAddUser} component={AddUserToProjectScreen} />
+    <Stack.Screen name={ROUTES.projectAddCost} component={AddCostToProjectScreen} />
+    {/* <Stack.Screen name={ROUTES.projectUpdateUser} component={EditUserFromProjectScreen} /> */}
   </Stack.Navigator>
 );
 

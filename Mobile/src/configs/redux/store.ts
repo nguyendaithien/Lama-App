@@ -14,11 +14,13 @@ import appReducer from '@src/features/app/appSlice';
 import authReducer from '@src/features/auth/authenSlice';
 import userReducer from '@src/features/user/userSlice';
 import teamReducer from '@src/features/team/teamSlice';
+import projectReducer from '@src/features/project/projectSlice';
 const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
   user: userReducer,
-  team: teamReducer
+  team: teamReducer,
+  project: projectReducer
 });
 
 const persistConfig = {

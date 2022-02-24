@@ -27,7 +27,7 @@ import {
   PlusIcon,
   SearchIcon,
   ActiveIcon,
-  UnActiveIcon
+  InactiveIcon
 } from '@src/components/Icons';
 import { TeamInforCard } from '@src/components/Team';
 import { useAppSelector, useAppDispatch } from '@src/hooks/reduxHooks';
@@ -59,17 +59,6 @@ export const TeamScreen = () => {
   const [selectedIndexFilterSort, setSelectedIndexFilterSort] = useState(new IndexPath(0));
   const [selectedIndexFilterStatus, setSelectedIndexFilterStatus] = useState(new IndexPath(0));
   const [visible, setVisible] = useState(false);
-
-  //
-  useEffect(() => {
-    dispatch(fetchGetTeams({ page: 1, limit: 100, search, sort: null, status: null }));
-  }, [dispatch, search]);
-
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    dispatch(fetchGetTeams({ page, limit, search, sort, status }));
-    !isFetching && setRefreshing(false);
-  }, [dispatch, page, limit, search, sort, status, isFetching]);
 
   //funt handle
   const handleAccessDetail = (idOfDetail: number) => {
@@ -134,11 +123,22 @@ export const TeamScreen = () => {
           onBackdropPress={toggleFilter}
         >
           <MenuItem accessoryLeft={ActiveIcon} title="Active" />
-          <MenuItem accessoryLeft={UnActiveIcon} title="Inactive" />
+          <MenuItem accessoryLeft={InactiveIcon} title="Inactive" />
         </OverflowMenu>
       </Layout>
     );
   };
+
+  //
+  useEffect(() => {
+    dispatch(fetchGetTeams({ page: 1, limit: 100, search, sort: null, status: null }));
+  }, [dispatch, search]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+    !isFetching && setRefreshing(false);
+  }, [dispatch, page, limit, search, sort, status, isFetching]);
   return (
     <Layout style={styles.container}>
       <TopNavigation alignment="center" title="Teams" accessoryRight={renderBellAction} />

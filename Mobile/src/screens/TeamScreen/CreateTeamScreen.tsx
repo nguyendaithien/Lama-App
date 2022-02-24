@@ -31,9 +31,8 @@ export const CreateTeamScreen = () => {
   //root state
   // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
   const isCreatingNewTeam = useAppSelector(state => state.user.isCreatingNewUser);
-  const [createNewTeamMsg, setCreateNewTeamMsg] = useState(
-    useAppSelector(state => state.team.fetchCreateNewTeamMsg)
-  );
+  const createNewTeamMsg = useAppSelector(state => state.team.fetchCreateNewTeamMsg);
+
   // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
   //screen state
   const [modalStatus, setModalStatus] = useState<boolean>(false);
@@ -46,12 +45,12 @@ export const CreateTeamScreen = () => {
   async function getFetchCreateTeam() {
     try {
       await dispatch(fetchCreateNewTeam({ name: teamName, description: teamDescription }));
-      createNewTeamMsg === MESSAGES.CREATE_SUCCESS && setModalStatus(true);
+      setModalStatus(true);
       createNewTeamMsg === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
       setIsShowingError(true);
       setTimeout(() => {
         setIsShowingError(false);
-        setCreateNewTeamMsg(null);
+        // setCreateNewTeamMsg(null);
       }, 6000);
     } catch (error) {
       console.log(error);
@@ -102,7 +101,7 @@ export const CreateTeamScreen = () => {
 
   return (
     <Layout style={styles.container}>
-      <TopNavigation alignment="center" title="Create Member" accessoryLeft={BackAction} />
+      <TopNavigation alignment="center" title="Create Team" accessoryLeft={BackAction} />
       <Divider />
       <Layout>
         <Layout style={{ alignItems: 'center' }}>
@@ -128,19 +127,24 @@ export const CreateTeamScreen = () => {
           keyboardType="default"
         />
       </Layout>
-      {modalStatus && (
-        <Layout style={{ minHeight: 192 }}>
-          <Modal
-            visible={modalStatus}
-            backdropStyle={styles.backdrop}
-            onBackdropPress={() => setModalStatus(false)}
-          >
-            <Card disabled={true}>
-              <Layout style={{ alignItems: 'center' }}>
+
+      <Layout>
+        <Modal
+          visible={modalStatus}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setModalStatus(false)}
+        >
+          <Card style={{ width: '95%' }} disabled={true}>
+            <Layout style={{ alignItems: 'center' }}>
+              {isCreatingNewTeam ? (
+                <Spinner />
+              ) : (
                 <Text style={{ marginBottom: 10 }}>{`${createNewTeamMsg}`}</Text>
-              </Layout>
+              )}
+            </Layout>
+            {createNewTeamMsg === MESSAGES.CREATE_SUCCESS && (
               <Button
-                style={{ marginBottom: 10 }}
+                style={styles.button}
                 onPress={() => {
                   setModalStatus(false);
                   handleCleanPlaceHolder();
@@ -149,18 +153,20 @@ export const CreateTeamScreen = () => {
                 ADD MORE TEAM
                 {/* OKE */}
               </Button>
-              <Button
-                onPress={() => {
-                  setModalStatus(false);
-                  navigateBack();
-                }}
-              >
-                BACK TO TEAMS SCREEN
-              </Button>
-            </Card>
-          </Modal>
-        </Layout>
-      )}
+            )}
+
+            <Button
+              onPress={() => {
+                setModalStatus(false);
+                createNewTeamMsg === MESSAGES.CREATE_SUCCESS && navigateBack();
+              }}
+            >
+              BACK
+            </Button>
+          </Card>
+        </Modal>
+      </Layout>
+
       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
         {isCreatingNewTeam && <Spinner status="primary" />}
       </Layout>
@@ -208,8 +214,9 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
-    height: 60,
-    borderRadius: 5
+    height: 50,
+    borderRadius: 5,
+    marginBottom: 20
   },
   backdrop: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)'

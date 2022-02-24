@@ -37,7 +37,7 @@ export const FilterIcon = (props: any) => <Icon {...props} name="options-2-outli
 
 export const ActiveIcon = (props: any) => <Icon {...props} name="flash-outline" />;
 
-export const UnActiveIcon = (props: any) => <Icon {...props} name="flash-off-outline" />;
+export const InactiveIcon = (props: any) => <Icon {...props} name="flash-off-outline" />;
 
 export const MessageIcon = (props: any) => <Icon {...props} name="message-circle-outline" />;
 
@@ -53,8 +53,20 @@ export const DeleteIcon2 = (props: any) => <Icon {...props} name="trash-outline"
 
 export const DeleteIcon = (props: any) => <Icon {...props} name="minus-circle-outline" />;
 
+export const CalendarIcon = (props: any) => <Icon {...props} name="calendar" />;
+
+export const CreditIcon = (props: any) => <Icon {...props} name="credit-card-outline" />;
+
+export const CompletedIcon = (props: any) => <Icon {...props} name="checkmark-circle-2-outline" />;
+
+export const CanceledIcon = (props: any) => <Icon {...props} name="close-circle-outline" />;
+
+export const InprogressIcon = (props: any) => <Icon {...props} name="play-circle-outline" />;
+
 //assets icon
 
 export const GenderIcon = (props: any) => <Icon {...props} name="gender" pack="assets" />;
 
 export const EmailIcon = (props: any) => <Icon {...props} name="email" pack="assets" />;
+
+export const IncomeIcon = (props: any) => <Icon {...props} name="money" pack="assets" />;

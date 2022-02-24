@@ -120,7 +120,7 @@ export const fetchGetTeams = createAsyncThunk(
   }
 );
 
-export const fetchGetTeam = createAsyncThunk(
+export const fetchGetTeamDetail = createAsyncThunk(
   'team/fetchGetTeam',
   async (payload: number, { rejectWithValue }) => {
     try {
@@ -164,7 +164,7 @@ export const fetchChangeTeamStatus = createAsyncThunk(
   async (payload: ITeamUpdateStatus, { rejectWithValue }) => {
     try {
       const token = await getToken();
-      const response = await teamAPI.changeStatus(token, payload);
+      const response = await teamAPI.changeStatusTeam(token, payload);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response?.data?.message || error?.response || error);
@@ -211,7 +211,7 @@ export const fetchRemoveUserFromTeam = createAsyncThunk(
   }
 );
 
-export const userSlice = createSlice({
+export const teamSlice = createSlice({
   name: 'team',
   initialState,
   reducers: {
@@ -252,16 +252,16 @@ export const userSlice = createSlice({
       })
 
       //handle fet get team by id
-      .addCase(fetchGetTeam.rejected, (state, action) => {
+      .addCase(fetchGetTeamDetail.rejected, (state, action) => {
         state.team = {};
         state.isFetchingGetTeam = false;
         state.fetchGetTeamMsg = action.payload || action.error.message;
       })
-      .addCase(fetchGetTeam.pending, (state, action) => {
+      .addCase(fetchGetTeamDetail.pending, (state, action) => {
         state.isFetchingGetTeam = true;
         state.fetchGetTeamMsg = null;
       })
-      .addCase(fetchGetTeam.fulfilled, (state, action) => {
+      .addCase(fetchGetTeamDetail.fulfilled, (state, action) => {
         state.team = action.payload;
         state.isFetchingGetTeam = false;
         state.fetchGetTeamMsg = null;
@@ -300,65 +300,65 @@ export const userSlice = createSlice({
       //handle change status
       .addCase(fetchChangeTeamStatus.rejected, (state, action) => {
         state.team = {};
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = action.payload || action.error.message;
+        state.isFetchingChangeTeamStatus = false;
+        state.fetchChangeTeamStatusMsg = action.payload || action.error.message;
       })
       .addCase(fetchChangeTeamStatus.pending, (state, action) => {
-        state.isFetchingUpdateTeam = true;
-        state.fetchUpdateTeamMsg = null;
+        state.isFetchingChangeTeamStatus = true;
+        state.fetchChangeTeamStatusMsg = null;
       })
       .addCase(fetchChangeTeamStatus.fulfilled, (state, action) => {
         state.team = action.payload;
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = MESSAGES.UPDATE_SUCCESS;
+        state.isFetchingChangeTeamStatus = false;
+        state.fetchChangeTeamStatusMsg = MESSAGES.UPDATE_SUCCESS;
       })
 
-      //handle change status
+      //handle add user
       .addCase(fetchAddUserToTeam.rejected, (state, action) => {
         state.team = {};
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = action.payload || action.error.message;
+        state.isFetchingAddUserToTeam = false;
+        state.fetchAddUserToTeamMsg = action.payload || action.error.message;
       })
       .addCase(fetchAddUserToTeam.pending, (state, action) => {
-        state.isFetchingUpdateTeam = true;
-        state.fetchUpdateTeamMsg = null;
+        state.isFetchingAddUserToTeam = true;
+        state.fetchAddUserToTeamMsg = null;
       })
       .addCase(fetchAddUserToTeam.fulfilled, (state, action) => {
         state.team = action.payload;
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = MESSAGES.ADD_SUCCESS;
+        state.isFetchingAddUserToTeam = false;
+        state.fetchAddUserToTeamMsg = MESSAGES.ADD_SUCCESS;
       })
 
       //handle update user in team
       .addCase(fetchUpdateUserFromTeam.rejected, (state, action) => {
         state.team = {};
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = action.payload || action.error.message;
+        state.isFetchingUpdateUserInTeam = false;
+        state.fetchUpdateUserFromteam = action.payload || action.error.message;
       })
       .addCase(fetchUpdateUserFromTeam.pending, (state, action) => {
-        state.isFetchingUpdateTeam = true;
-        state.fetchUpdateTeamMsg = null;
+        state.isFetchingUpdateUserInTeam = true;
+        state.fetchUpdateUserFromteam = null;
       })
       .addCase(fetchUpdateUserFromTeam.fulfilled, (state, action) => {
         state.team = action.payload;
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = MESSAGES.ADD_SUCCESS;
+        state.isFetchingUpdateUserInTeam = false;
+        state.fetchUpdateUserFromteam = MESSAGES.ADD_SUCCESS;
       })
 
       //handle update user in team
       .addCase(fetchRemoveUserFromTeam.rejected, (state, action) => {
         state.team = {};
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = action.payload || action.error.message;
+        state.isFetchingRemoveUserFromTeam = false;
+        state.fetchRemoveUserFromTeamMsg = action.payload || action.error.message;
       })
       .addCase(fetchRemoveUserFromTeam.pending, (state, action) => {
-        state.isFetchingUpdateTeam = true;
-        state.fetchUpdateTeamMsg = null;
+        state.isFetchingRemoveUserFromTeam = true;
+        state.fetchRemoveUserFromTeamMsg = null;
       })
       .addCase(fetchRemoveUserFromTeam.fulfilled, (state, action) => {
         state.team = action.payload;
-        state.isFetchingUpdateTeam = false;
-        state.fetchUpdateTeamMsg = MESSAGES.DELETE_SUCCESS;
+        state.isFetchingRemoveUserFromTeam = false;
+        state.fetchRemoveUserFromTeamMsg = MESSAGES.DELETE_SUCCESS;
       });
   }
 });
@@ -369,4 +369,4 @@ export const selectTeamDetail = (state: RootState) => state.team.team;
 
 export const selectCreateNewUserMsg = (state: RootState) => state.team.fetchCreateNewTeamMsg;
 
-export default userSlice.reducer;
+export default teamSlice.reducer;

@@ -78,12 +78,12 @@ export const MoreScreen = () => {
         >
           <Text style={styles.text}>Liên hệ & Hỗ trợ</Text>
         </Pressable>
-        <Pressable
+        {/* <Pressable
           style={[styles.item, borderBottomColor]}
           onPress={() => navigation.navigate(ROUTES.changePassword)}
         >
           <Text style={styles.text}>Đổi mật khẩu</Text>
-        </Pressable>
+        </Pressable> */}
 
         <Pressable style={[styles.item, borderBottomColor]} onPress={createLogoutAlert}>
           <Text style={styles.text}>Đăng xuất</Text>

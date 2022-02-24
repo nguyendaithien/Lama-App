@@ -47,7 +47,7 @@ import {
   fetchAddUserToTeam,
   fetchChangeTeamStatus,
   fetchDeleteTeam,
-  fetchGetTeam,
+  fetchGetTeamDetail,
   fetchGetTeams,
   fetchUpdateTeam,
   fetchUpdateUserFromTeam
@@ -173,7 +173,7 @@ export const TeamDetailScreen = () => {
         icon={!isEdit ? EditIcon : SaveIcon}
         onPress={() => {
           setIsEdit(!isEdit);
-          dispatch(fetchGetTeam(teamID));
+          dispatch(fetchGetTeamDetail(teamID));
           isEdit && dispatch(fetchUpdateTeam({ teamID, name, description }));
         }}
       />
@@ -205,7 +205,7 @@ export const TeamDetailScreen = () => {
   };
   //Initial Effect
   useEffect(() => {
-    dispatch(fetchGetTeam(teamID));
+    dispatch(fetchGetTeamDetail(teamID));
   }, [dispatch, teamID]);
 
   useEffect(() => {
@@ -216,7 +216,7 @@ export const TeamDetailScreen = () => {
   }, [teamDetail.description, teamDetail.isActive, teamDetail.name]);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    dispatch(fetchGetTeam(teamID));
+    dispatch(fetchGetTeamDetail(teamID));
     !isLoadingFetchGetTeamInfor && setRefreshing(false);
   }, [dispatch, isLoadingFetchGetTeamInfor, teamID]);
   return (
@@ -321,9 +321,18 @@ export const TeamDetailScreen = () => {
 
           {!isEdit && (
             <>
-              <Text style={{ paddingLeft: 10, marginTop: 15, marginBottom: 5 }}>
-                Users of team: {`${usersOfTeam?.length}`}
-              </Text>
+              <Layout
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingRight: 7,
+                  marginTop: 10
+                }}
+              >
+                <Text style={{ paddingLeft: 10 }}>Users of team: {`${usersOfTeam?.length}`}</Text>
+                <PlusIconAction />
+              </Layout>
               {usersOfTeam?.length !== 0 && (
                 <>
                   <Layout style={{ height: 200 }}>
@@ -354,7 +363,6 @@ export const TeamDetailScreen = () => {
           )}
           {!isEdit && (
             <Layout style={{ marginBottom: 15, alignItems: 'flex-end', paddingHorizontal: 11 }}>
-              <PlusIconAction />
               <Modal
                 visible={modalAddUser}
                 backdropStyle={styles.backdrop}

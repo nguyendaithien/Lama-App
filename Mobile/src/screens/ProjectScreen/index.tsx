@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Text,
@@ -8,8 +8,21 @@ import {
   useTheme,
   Input,
   OverflowMenu,
-  MenuItem
+  MenuItem,
+  Modal,
+  Button,
+  Select,
+  Card,
+  IndexPath,
+  SelectItem
 } from '@ui-kitten/components';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  SafeAreaView,
+  RefreshControl
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
@@ -20,23 +33,63 @@ import {
   PlusIcon,
   SearchIcon,
   ActiveIcon,
-  UnActiveIcon,
+  InactiveIcon,
   TeamIcon
 } from '@src/components/Icons';
-import { StyleSheet, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
 import { teamlist } from '@src/_mocks/teamList';
 import { TeamInforCard } from '@src/components/Team';
+import { ProjectInforCard } from '@src/components/Project';
+import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
+import { fetchGetProjects } from '@src/features/project/projectSlice';
+
+//data show filter
+const sortOption = [
+  'No',
+  'Oldest project',
+  'Newest project',
+  'Name from A to Z',
+  'Name from Z to A',
+  'Income increase',
+  'Income decrease'
+];
+const statusOption = [
+  'No',
+  'Only canceled projects',
+  'Only in progess projects',
+  'Only completed projects'
+];
 
 export const ProjectScreen = () => {
-  const [value, setValue] = React.useState('');
-  const [filterVisible, setFilterVisible] = React.useState(false);
-
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch();
 
+  //Root state
+  const projects = useAppSelector(state => state.project.projects);
+  const isFetching = useAppSelector(state => state.project.isFetchingGetProjects);
+
+  //param state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(100);
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<number | null>(null);
+  const [status, setStatus] = useState<number | null>(null);
+
+  //filter state
+  const [filterVisible, setFilterVisible] = React.useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [selectedIndexFilterSort, setSelectedIndexFilterSort] = useState(new IndexPath(0));
+  const [selectedIndexFilterStatus, setSelectedIndexFilterStatus] = useState(new IndexPath(0));
+  const [visibleFilter, setVisibleFilter] = useState(false);
+
+  //funt handle
   const handleAccessDetail = (idOfDetail: number) => {
-    navigationPassID.navigate(ROUTES.teamDetail, { id: idOfDetail });
+    console.log(idOfDetail);
+    navigationPassID.navigate(ROUTES.projectDetail, { id: idOfDetail });
   };
+
+  const displayValueSortFilter = sortOption[selectedIndexFilterSort.row];
+  const displayValueStatusFilter = statusOption[selectedIndexFilterStatus.row];
 
   const toggleFilter = () => {
     setFilterVisible(!filterVisible);
@@ -51,7 +104,7 @@ export const ProjectScreen = () => {
       <TouchableOpacity
         onPress={() => {
           console.log('hello');
-          setValue('');
+          setSearch('');
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -62,8 +115,7 @@ export const ProjectScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.log('hello');
-          setValue('');
+          navigation.navigate(ROUTES.projectCreate);
         }}
       >
         <PlusIcon fill="grey" style={styles.iconBig} />
@@ -75,48 +127,101 @@ export const ProjectScreen = () => {
       <TouchableOpacity
         onPress={() => {
           toggleFilter();
+          setVisibleFilter(true);
         }}
       >
         <FilterIcon fill="grey" style={styles.icon} />
       </TouchableOpacity>
     );
   };
-  const RenderRightActions = () => {
-    return (
-      <Layout>
-        <OverflowMenu
-          anchor={FilterIconAction}
-          visible={filterVisible}
-          onBackdropPress={toggleFilter}
-        >
-          <MenuItem accessoryLeft={ActiveIcon} title="Active" />
-          <MenuItem accessoryLeft={UnActiveIcon} title="Inactive" />
-        </OverflowMenu>
-      </Layout>
-    );
-  };
+  //
+  useEffect(() => {
+    dispatch(fetchGetProjects({ page: 1, limit: 100, search, sort: null, status: null }));
+  }, [dispatch, search]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchGetProjects({ page, limit, search, sort, status }));
+    !isFetching && setRefreshing(false);
+  }, [dispatch, page, limit, search, sort, status, isFetching]);
+
   return (
     <Layout style={styles.container}>
-      <TopNavigation alignment="center" title="Teams" accessoryRight={renderBellAction} />
+      <TopNavigation alignment="center" title="Projects" accessoryRight={renderBellAction} />
       <Divider />
       <Layout style={styles.searchContainer}>
         <Input
-          value={value}
+          value={search}
           placeholder="Place your Text"
           accessoryRight={renderSearchIconAction}
-          onChangeText={nextValue => setValue(nextValue)}
+          onChangeText={nextValue => setSearch(nextValue)}
         />
         <Layout style={styles.numberTeam_Filter}>
           <Text appearance="hint" style={{ fontStyle: 'italic' }}>
-            Number of Teams: {`${teamlist.length}`}
+            Number of Projects: {`${projects.length}`}
           </Text>
-          <RenderRightActions />
+          <FilterIconAction />
         </Layout>
+        <Modal
+          visible={visibleFilter}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setVisibleFilter(false)}
+        >
+          <Card disabled={true} style={{ width: 350, borderRadius: 10 }}>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Sort
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              value={displayValueSortFilter}
+              selectedIndex={selectedIndexFilterSort}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                setSelectedIndexFilterSort(indexSelect);
+                setSort(indexSelect.row);
+              }}
+            >
+              {sortOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+            <Text category={'h6'} style={{ fontStyle: 'italic' }}>
+              Status
+            </Text>
+            <Select
+              style={{ marginBottom: 10 }}
+              selectedIndex={selectedIndexFilterStatus}
+              value={displayValueStatusFilter}
+              onSelect={index => {
+                const indexSelect = index as IndexPath;
+                setSelectedIndexFilterStatus(indexSelect);
+                setStatus(indexSelect.row);
+              }}
+            >
+              {statusOption.map((item, index) => {
+                return <SelectItem title={item} key={index} />;
+              })}
+            </Select>
+
+            <Button
+              style={{ marginTop: 5 }}
+              onPress={() => {
+                setVisibleFilter(false);
+                dispatch(fetchGetProjects({ page, limit, search, sort, status }));
+              }}
+            >
+              SUBMIT
+            </Button>
+          </Card>
+        </Modal>
       </Layout>
       <Layout style={{ height: '70%', paddingHorizontal: 15 }}>
-        <ScrollView contentContainerStyle={styles.teamList}>
-          {teamlist.map((item, index) => {
-            return <TeamInforCard key={index} data={item} onPress={handleAccessDetail} />;
+        <ScrollView
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          contentContainerStyle={styles.teamList}
+        >
+          {projects.map((item, index) => {
+            return <ProjectInforCard key={index} data={item} onPress={handleAccessDetail} />;
           })}
         </ScrollView>
       </Layout>
@@ -156,5 +261,8 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     paddingHorizontal: 20,
     justifyContent: 'space-between'
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   }
 });

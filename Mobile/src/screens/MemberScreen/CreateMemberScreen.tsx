@@ -31,21 +31,16 @@ import MESSAGES from '@src/configs/constant/messages';
 
 export const CreateMemberScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
   //root state
-  // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
   const isCreatingNewUser = useAppSelector(state => state.user.isCreatingNewUser);
+  const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
   //screen state
   const [modalStatus, setModalStatus] = useState<boolean>(false);
   const [firstName, setFirstName] = useState<string>('');
   const [lastName, setLastName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
-  const [isShowingError, setIsShowingError] = useState(false);
-  const [createNewUserMsgRootState, setCreateNewUserMsgRootState] = useState(
-    useAppSelector(state => state.user.fetchCreateNewUserMsg)
-  );
 
   const navigateBack = () => {
     navigationPassID.goBack();
@@ -58,7 +53,7 @@ export const CreateMemberScreen = () => {
         <Button
           style={styles.button}
           onPress={() => {
-            getFetchCreateTeam();
+            getFetchCreateUser();
           }}
           status="primary"
           size="giant"
@@ -68,16 +63,12 @@ export const CreateMemberScreen = () => {
       </Layout>
     );
   };
-  async function getFetchCreateTeam() {
+  async function getFetchCreateUser() {
     try {
       await dispatch(fetchCreateNewUser({ email, firstName, lastName, phone: phoneNumber }));
-      createNewUserMsgRootState === MESSAGES.CREATE_SUCCESS && setModalStatus(true);
-      createNewUserMsgRootState === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
+      setModalStatus(true);
+      fetchCreateNewUserMsg === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
       // setCreateNewUserMsg(createNewUserMsgRootState);
-      setIsShowingError(true);
-      setTimeout(() => {
-        setIsShowingError(false);
-      }, 6000);
     } catch (error) {
       console.log(error);
     }
@@ -89,10 +80,7 @@ export const CreateMemberScreen = () => {
   const HandleShowError = () => {
     return (
       <Layout style={{ alignItems: 'center', marginVertical: 10 }}>
-        <Text
-          style={{ fontStyle: 'italic' }}
-          status={'danger'}
-        >{`${createNewUserMsgRootState}`}</Text>
+        <Text style={{ fontStyle: 'italic' }} status={'danger'}>{`${fetchCreateNewUserMsg}`}</Text>
       </Layout>
     );
   };
@@ -147,16 +135,23 @@ export const CreateMemberScreen = () => {
           keyboardType="numeric"
         />
       </Layout>
-      {modalStatus && (
-        <Layout style={{ minHeight: 192 }}>
-          <Modal
-            visible={modalStatus}
-            backdropStyle={styles.backdrop}
-            onBackdropPress={() => setModalStatus(false)}
-          >
-            <Card disabled={true} style={{ width: 350, borderRadius: 10 }}>
-              {/* <Text style={{ marginBottom: 10 }}>{`${createNewUserMsgRootState}`}</Text> */}
-              <HandleShowError />
+
+      <Layout>
+        <Modal
+          visible={modalStatus}
+          backdropStyle={styles.backdrop}
+          onBackdropPress={() => setModalStatus(false)}
+        >
+          <Card disabled={true} style={{ width: 350, borderRadius: 10 }}>
+            <Layout style={{ alignItems: 'center' }}>
+              {fetchCreateNewUserMsg !== null &&
+              fetchCreateNewUserMsg !== MESSAGES.CREATE_SUCCESS ? (
+                <Text style={{ marginBottom: 10 }}>Phone invalid</Text>
+              ) : (
+                <Text style={{ marginBottom: 10 }}>{`${fetchCreateNewUserMsg}`}</Text>
+              )}
+            </Layout>
+            {fetchCreateNewUserMsg === MESSAGES.CREATE_SUCCESS && (
               <Button
                 style={{ marginBottom: 10 }}
                 onPress={() => {
@@ -166,24 +161,22 @@ export const CreateMemberScreen = () => {
               >
                 ADD MORE USER
               </Button>
-              <Button
-                onPress={() => {
-                  setModalStatus(false);
-                  navigateBack();
-                }}
-              >
-                BACK TO USERS SCREEN
-              </Button>
-            </Card>
-          </Modal>
-        </Layout>
-      )}
+            )}
+            <Button
+              onPress={() => {
+                setModalStatus(false);
+                fetchCreateNewUserMsg === MESSAGES.CREATE_SUCCESS && navigateBack();
+              }}
+            >
+              BACK
+            </Button>
+          </Card>
+        </Modal>
+      </Layout>
       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
         {isCreatingNewUser && <Spinner status="primary" />}
       </Layout>
       {handleDetectFullFill() && <SubmitBotton />}
-      {isShowingError && <HandleShowError />}
-      {/* {myTimeout} */}
     </Layout>
   );
 };

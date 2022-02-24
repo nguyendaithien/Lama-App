@@ -28,7 +28,7 @@ class TeamAPI {
   }
 
   updateTeamInfor(token: string, data: ITeamBodyRequest) {
-    const validKeys = ['name', 'description', 'avater'];
+    const validKeys = ['name', 'description', 'avatar'];
     return axiosRequest(
       this.teamAPIEndpoint + `${data.teamID}`,
       null,
@@ -42,7 +42,7 @@ class TeamAPI {
     return axiosRequest(this.teamAPIEndpoint + `${id}`, null, 'DELETE', token);
   }
 
-  changeStatus(token: string, data: ITeamUpdateStatus) {
+  changeStatusTeam(token: string, data: ITeamUpdateStatus) {
     const validKeys = ['isActive'];
     return axiosRequest(
       this.teamAPIEndpoint + `${data.teamID}` + '/status',

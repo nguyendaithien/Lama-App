@@ -197,8 +197,7 @@ export const MemberDetailScreen = () => {
             accessoryLeft={TeamIcon}
             value={
               userInfor.userTeams?.length
-                ? userInfor.userTeams![0]?.team?.name +
-                  (userInfor.userTeams![0]?.role ? ' - (Leader)' : '- (Member)')
+                ? `${userInfor.userTeams![0]?.team?.name}` + ` - (${userInfor.userTeams![0]?.role})`
                 : 'Null'
             }
             onChangeText={setPhone}

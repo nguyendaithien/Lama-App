@@ -120,7 +120,7 @@ export default class ProjectService {
       throw new NotFoundException('deleteProject', 'Project not found');
     }
 
-    return this.projectRepository.softDelete(project);
+    return this.projectRepository.softRemove(project);
   }
 
   public async addUserToProject(
@@ -158,16 +158,16 @@ export default class ProjectService {
   ) {
     const user = await this.userService.findOne(updateUserInProjectDto.userId);
     if (!user) {
-      throw new NotFoundException('addUserToProject', 'User not found');
+      throw new NotFoundException('updateUserInProject', 'User not found');
     }
 
     const project = await this.findOne(projectId);
     if (!project) {
-      throw new NotFoundException('addUserToProject', 'Project not found');
+      throw new NotFoundException('updateUserInProject', 'Project not found');
     }
 
     if (!project.userProjects.some(userProject => userProject.user.id === user.id)) {
-      throw new BadRequestException('addUserToProject', 'User is not in project');
+      throw new BadRequestException('updateUserInProject', 'User is not in project');
     }
 
     project.userProjects = project.userProjects.map(userProject => {
@@ -192,20 +192,27 @@ export default class ProjectService {
   ) {
     const user = await this.userService.findOne(deleteUserInProjectDto.userId);
     if (!user) {
-      throw new NotFoundException('addUserToProject', 'User not found');
+      throw new NotFoundException('deleteUserInProject', 'User not found');
     }
 
     const project = await this.findOne(projectId);
     if (!project) {
-      throw new NotFoundException('addUserToProject', 'Project not found');
+      throw new NotFoundException('deleteUserInProject', 'Project not found');
     }
 
     const userProject = project.userProjects.find(userProject => userProject.user.id === user.id);
     if (!userProject) {
-      throw new BadRequestException('addUserToProject', 'User is not in project');
+      throw new BadRequestException('deleteUserInProject', 'User is not in project');
     }
 
-    await this.userProjectRepository.delete(userProject);
+    await this.userProjectRepository
+      .createQueryBuilder('userProject')
+      .leftJoin('userProject.user', 'user')
+      .leftJoin('userProject.project', 'project')
+      .softDelete()
+      .where('user.id = :userId', { userId: deleteUserInProjectDto.userId })
+      .andWhere('project.id = :projectId', { projectId })
+      .execute();
 
     project.userProjects = project.userProjects.filter(
       userProject => userProject.user.id !== deleteUserInProjectDto.userId,

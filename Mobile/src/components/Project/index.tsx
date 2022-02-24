@@ -1,19 +1,34 @@
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Text } from '@ui-kitten/components';
+import { Text, useTheme } from '@ui-kitten/components';
 import React from 'react';
 import { ITeam } from '@src/models/team';
 import { Layout } from '@ui-kitten/components';
 import { activeStatusCard, inActiveStatusCard } from '@src/theme/customTheme';
-
-interface ITeamInforCardProps {
+import { IProject, EProjectStatus } from '@src/models/project';
+interface IProjectInforCardProps {
   onPress: (id: number) => void;
-  data: ITeam;
+  data: IProject;
 }
 
-export const TeamInforCard = ({ onPress, data }: ITeamInforCardProps) => {
+export const ProjectInforCard = ({ onPress, data }: IProjectInforCardProps) => {
+  const theme = useTheme();
+  const CanceledBgr = theme['color-danger-400'];
+  const InProgressBgr = theme['color-primary-400'];
+  const CompletedBgr = theme['color-primary-transparent-300'];
+
   return (
     <TouchableOpacity
-      style={[styles.TeamInforCard, !data.isActive && { backgroundColor: inActiveStatusCard }]}
+      style={[
+        styles.ProjectInforCard,
+        {
+          backgroundColor:
+            data.status === EProjectStatus.IN_PROGRESS
+              ? InProgressBgr
+              : data.status === EProjectStatus.COMPLETED
+              ? CompletedBgr
+              : CanceledBgr
+        }
+      ]}
       onPress={() => onPress(data.id!)}
     >
       <Layout
@@ -40,42 +55,22 @@ export const TeamInforCard = ({ onPress, data }: ITeamInforCardProps) => {
           <Text category={'h5'} style={{ fontWeight: 'bold' }}>{`${data.name}`}</Text>
         </Layout>
       </Layout>
+      <Text style={{ fontStyle: 'italic' }}>Status: {`${data.status}`}</Text>
+      <Text style={{ fontStyle: 'italic' }}>Income: {`${data.income}`} VND</Text>
+      {/* <Text style={{}}>Created at: {`${data.createdAt!.slice(0, 10)}`}</Text> */}
+      <Text style={{ fontStyle: 'italic' }}>Description: {`${data.description}`}</Text>
       <Text style={{ fontStyle: 'italic' }}>
-        Status: {`${data.isActive ? 'Active' : 'Inactive'}`}
+        Start-time: {`${data.startTime?.slice(0, 10)}`} - End-Time:{' '}
+        {`${data.endTime?.slice(0, 10)}`}
       </Text>
-      {/* <Text style={{}}>Created at: {`${data.createdAt!.slice(0, 10)}`}</Text> */}
-      <Text style={{ fontStyle: 'italic' }}>Description: {`${data.description}`}</Text>
-    </TouchableOpacity>
-  );
-};
-
-export const TeamInforCardSearchToAddUserToProject = ({ onPress, data }: ITeamInforCardProps) => {
-  return (
-    <TouchableOpacity style={styles.TeamInforCardAddUserProject} onPress={() => onPress(data.id!)}>
-      <Layout style={{ backgroundColor: 'transparent', justifyContent: 'center' }}>
-        <Text category={'h5'} style={{ fontWeight: 'bold' }}>{`${data.name}`}</Text>
-      </Layout>
-      {/* <Text style={{}}>Created at: {`${data.createdAt!.slice(0, 10)}`}</Text> */}
-      <Text style={{ fontStyle: 'italic' }}>Description: {`${data.description}`}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  TeamInforCard: {
-    height: 120,
-    backgroundColor: activeStatusCard,
+  ProjectInforCard: {
+    height: 160,
     width: '100%',
-    borderRadius: 5,
-    justifyContent: 'space-evenly',
-    alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    marginBottom: 10
-  },
-  TeamInforCardAddUserProject: {
-    height: 60,
-    backgroundColor: activeStatusCard,
-    width: '95%',
     borderRadius: 5,
     justifyContent: 'space-evenly',
     alignItems: 'flex-start',

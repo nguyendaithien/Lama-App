@@ -18,7 +18,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ProjectBasicDto'
+                $ref: '#/components/schemas/ProjectExtendDto'
         400:
           description: Invalid input
           content:
@@ -541,7 +541,7 @@ paths:
     delete:
       tags:
         - Project
-      summary: Remove an user from a project (by admin)
+      summary: Remove a cost from a project (by admin)
       security:
         - bearerAuth: []
       parameters:
