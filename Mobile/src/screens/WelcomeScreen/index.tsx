@@ -1,31 +1,29 @@
 import React from 'react';
 import { StyleSheet, Image, ImageProps } from 'react-native';
 import { Button, Layout, Text, ViewPager, Icon, useTheme } from '@ui-kitten/components';
-// import {useAppDispatch} from '@src/hooks/reduxHooks';
-// import {passAppFirstLaunch} from '@src/features/app/appSlice';
-import { DimensionScre } from '@src/consts/dimentions';
+import { passAppFirstLaunch } from '@src/features/app/appSlice';
+import { DimensionScre } from '@src/configs/constant/dimentions';
+import { useAppDispatch } from '@src/hooks/reduxHooks';
 
 const onboardingList = [
   {
     id: 1,
-    title: 'Dangerous Search',
-    description:
-      'Collect data from sensors located in multiple locations. Analyze data to provide warnings about hazards',
+    title: 'Projects Manager',
+    description: 'Quick project management',
     img: require('@src/assets/images/onboarding1.png'),
     isActive: true
   },
   {
     id: 2,
-    title: 'Instant Notifications',
-    description:
-      'Notify immediately when danger is detected. Provide accurate warnings to create high reliability',
+    title: 'Teams Manager',
+    description: 'Quick team management',
     img: require('@src/assets/images/onboarding2.png'),
     isActive: false
   },
   {
     id: 3,
-    title: 'Time Management',
-    description: 'Save management time for large area.',
+    title: 'Members Manager',
+    description: 'Quick member management',
     img: require('@src/assets/images/onboarding3.png'),
     isActive: false
   },
@@ -93,8 +91,8 @@ const Dot = ({ id, selectedIndex }: IDotProps) => {
 };
 
 export const WelcomeScreen = () => {
-  // const dispatch = useAppDispatch();
-  // const handleButtonStart = () => dispatch(passAppFirstLaunch());
+  const dispatch = useAppDispatch();
+  const handleButtonStart = () => dispatch(passAppFirstLaunch());
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   return (
     <Layout style={styles.container}>
@@ -106,8 +104,8 @@ export const WelcomeScreen = () => {
       <Layout style={styles.footerContainer}>
         {selectedIndex === onboardingList.length - 1 ? (
           <Layout style={styles.getStartedContainer}>
-            {/* <Button onPress={handleButtonStart}>GET STARTED</Button> */}
-            <Button>GET STARTED</Button>
+            <Button onPress={handleButtonStart}>GET STARTED</Button>
+            {/* <Button>GET STARTED</Button> */}
           </Layout>
         ) : (
           <Layout style={styles.footerHandle}>

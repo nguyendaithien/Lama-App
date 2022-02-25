@@ -49,8 +49,9 @@ npm install -g yarn
 ```
 
 The first time, you will need to run this script to install dependencies.
+`
 
-```
+````
 yarn
 ```
 
@@ -90,3 +91,4 @@ yarn migration:generate
 ```
 yarn migration:run
 ```
+````

@@ -8,6 +8,7 @@ import { BottomNavigator } from './BottomNavigator';
 import { LoginScreen } from '@src/screens/AuthScreen';
 import { RegisterScreen } from '@src/screens/AuthScreen/RegisterScreen';
 import { NotificationScreen } from '@src/screens/NotificationScreen';
+import { WelcomeScreen } from '@src/screens/WelcomeScreen';
 export type RootStackParamList = {
   [name: string]: any;
 };
@@ -31,9 +32,9 @@ export const MyNavigation = () => {
           </>
         ) : (
           <>
-            {/* {isAppFirstLaunch && (
+            {isAppFirstLaunch && (
               <Stack.Screen name={ROUTES.onboarding} component={WelcomeScreen} />
-            )} */}
+            )}
             <Stack.Screen name={ROUTES.login} component={LoginScreen} />
             <Stack.Screen name={ROUTES.register} component={RegisterScreen} />
           </>

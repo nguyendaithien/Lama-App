@@ -25,12 +25,12 @@ export const NotificationScreen = () => {
       <TopNavigation
         alignment="center"
         title="Notification"
-        accessoryRight={renderBellAction}
+        // accessoryRight={renderBellAction}
         accessoryLeft={BackAction}
       />
       <Divider />
       <Layout style={{ alignItems: 'center', marginTop: 20 }}>
-        <Text>Hello, I'm Khanh 411 Lib</Text>
+        <Text>Don't have noti</Text>
       </Layout>
     </Layout>
   );
