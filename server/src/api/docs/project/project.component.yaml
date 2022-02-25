@@ -1,0 +1,205 @@
+components:
+  schemas:
+    ProjectBasicDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: John
+        description:
+          type: string
+          example: Vip project pro s max super ultra legend
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+        income:
+          type: number
+          example: 2000
+        status:
+          type: string
+          enum: [Canceled, In progress, Completed]
+          example: In progress
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+
+    ProjectCostDto:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        value:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+
+    UserProjectDto:
+      type: object
+      properties:
+        role:
+          type: string
+          example: Member
+        wage:
+          type: number
+          example: 200
+        user:
+          $ref: '#components/schemas/UserBasicDto'
+
+    ProjectExtendDto:
+      allOf:
+        - $ref: '#components/schemas/ProjectBasicDto'
+        - type: object
+          properties:
+            costs:
+              type: array
+              items:
+                $ref: '#components/schemas/ProjectCostDto'
+            userProjects:
+              type: array
+              items:
+                $ref: '#components/schemas/UserProjectDto'
+
+    PaginatedProjectsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#components/schemas/ProjectExtendDto'
+        meta:
+          $ref: '#components/schemas/PaginationMetaDto'
+
+    CreateProjectDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Project Vip
+        description:
+          type: string
+          example: 'Super project pro max s vip legend'
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+        income:
+          type: number
+          example: 5000
+        status:
+          type: string
+          enum: [Canceled, In progress, Completed]
+          example: In progress
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+
+    UpdateProjectDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Project Vip
+        description:
+          type: string
+          example: 'Super project pro max s vip legend'
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+        income:
+          type: number
+          example: 5000
+        startTime:
+          type: string
+          format: date-time
+        endTime:
+          type: string
+          format: date-time
+
+    ChangeProjectStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [Canceled, In progress, Completed]
+          example: In progress
+
+    AddUserToProjectDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7
+        role:
+          type: string
+          example: Member
+        wage:
+          type: number
+          example: 500
+
+    UpdateUserInProjectDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7
+        role:
+          type: string
+          example: Member
+        wage:
+          type: number
+          example: 500
+
+    DeleteUserInProjectDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7
+
+    AddProjectCostDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Component 1
+        value:
+          type: number
+          example: 20
+
+    UpdateProjectCostDto:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Component 1
+        value:
+          type: number
+          example: 20

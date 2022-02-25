@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Team Manager</title>
+</head>
+<body>
+    <a class="home-btn" href="login.html">
+        <img src="image/doge.png" style="width: 60px; height: 60px;">
+    </a>
+    <h1 class="title">Find Team</h1>
+    <form class="form" name="findForm" method="GET">
+        <div>
+            <label for="teamId" style="margin-right: 30px">Team ID:</label>
+            <input type="text" name="teamId" id="teamId" placeholder="Insert Team ID"><br>
+        </div>
+        <div>
+            <label for="teamName">Team Name:</label>
+            <input type="text" name="teamName" id="teamName" placeholder="Insert Team name">
+        </div><br>
+        <input id="teamSearch" type="submit" value="Find">
+    </form>
+    <h1 class="title">Create New Team</h1>
+        <form class="form" name="createForm" method="POST">
+            <div>
+                <label for="teamName">Team Name:</label>
+                <input type="text" name="teamName" id="teamName" placeholder="Insert Team name">
+            </div>
+            <input id="teamCreate" type="submit" value="Create">
+        </form>
+    <div id="message"></div>
+    <h1 class="title">Team List</h1>
+    <div id="teamList"></div>
+    <script>
+        const {ipcRenderer, remote} = require("electron");
+        const session =remote.session;
+        session.defaultSession.cookies.get({})
+        .then((cookies) => {
+            var tokenValue="Bearer "+cookies[0].value;
+            
+        //Find team
+        document.getElementById("teamSearch").addEventListener("click",function(e){
+            e.preventDefault();
+            const teamId=document.forms['findForm']['teamId'].value;
+            const teamName=document.forms['findForm']['teamName'].value;
+            let url;
+            if((teamId)&&(!teamName)){
+                url=`http://localhost:4000/backend/teams/find?id=${teamId}`;
+            }
+            if((!teamId)&&(teamName)){
+                url=`http://localhost:4000/backend/teams/find?name=${teamName}`;
+            }
+            if((teamId)&&(teamName)){
+                alert("Required 1 parameter!");
+            }
+            if((!teamId)&&(!teamName)){
+                alert("Content can not be empty!");
+            }
+            const request=remote.net.request({
+                method:"GET",
+                url:url,
+                redirect:"follow"
+            });
+            request.setHeader("Authorization",tokenValue);
+            request.on('response', (response) => { 
+                console.log(`STATUS: ${response.statusCode}`); 
+                console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                response.on('data', (chunk) => { 
+                    console.log(`BODY: ${chunk}`);
+                    var data=JSON.parse(chunk);
+                    ipcRenderer.send("teamMember",data);
+                }); 
+            }); 
+            request.on('finish', () => { 
+                console.log('Request is Finished') 
+            }); 
+            request.on('abort', () => { 
+                console.log('Request is Aborted') 
+            }); 
+            request.on('error', (error) => { 
+                console.log(`ERROR: ${JSON.stringify(error)}`)
+            }); 
+            request.on('close', (error) => { 
+                console.log('Last Transaction has occured') 
+            }); 
+            request.setHeader('Content-Type', 'application/json'); 
+            request.end(); 
+        })
+        //Team List
+        function teamList(){
+            document.getElementById("teamList").innerHTML=`
+                <table id="teamTable" style="width:100%">
+                    <tr>
+                        <th style="font-weight: bold;">Team ID</th>
+                        <th style="font-weight: bold;">Team Name</th>
+                    </tr>
+                </table>
+            `
+            const requestTeam = remote.net.request({
+                url:"http://localhost:4000/backend/teams/list",
+                method:"GET",
+                redirect:"follow"
+            })
+            requestTeam.setHeader("Authorization",tokenValue);
+            requestTeam.on('response', (response) => { 
+                console.log(`STATUS: ${response.statusCode}`); 
+                console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                response.on('data', (chunk) => { 
+                    console.log(`BODY: ${chunk}`);
+                    var teamList=JSON.parse(chunk);
+                    let i;
+                    for (i=0;i<teamList.length;i++){
+                        document.getElementById("teamTable").innerHTML+=`
+                            <tr>
+                                <th>${teamList[i].id}</th>
+                                <th>${teamList[i].name}</th>
+                            </tr>
+                        `
+                    }
+                }); 
+            }); 
+            requestTeam.on('finish', () => { 
+                console.log('Request is Finished') 
+            }); 
+            requestTeam.on('abort', () => { 
+                console.log('Request is Aborted') 
+            }); 
+            requestTeam.on('error', (error) => { 
+                console.log(`ERROR: ${JSON.stringify(error)}`)
+            }); 
+            requestTeam.on('close', (error) => { 
+                console.log('Last Transaction has occured') 
+            }); 
+            requestTeam.setHeader('Content-Type', 'application/json'); 
+            requestTeam.end(); 
+        }
+        teamList();
+    //Create team
+    document.getElementById("teamCreate").addEventListener("click",function(e){
+            e.preventDefault();
+            var body=JSON.stringify({name:document.forms['createForm']['teamName'].value});
+            const request = remote.net.request({
+                method:"POST",
+                url:"http://localhost:4000/backend/teams/create",
+                redirect:"follow"
+            })
+            request.setHeader("Authorization",tokenValue);
+            request.on('response', (response) => { 
+                console.log(`STATUS: ${response.statusCode}`); 
+                console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+                response.on('data', (chunk) => { 
+                    console.log(`BODY: ${chunk}`);
+                    var data=JSON.parse(chunk);
+                    var name=document.forms['createForm']['teamName'].value;
+                    if (response.statusCode==200){
+                        document.getElementById("teamTable").innerHTML+=`
+                            <tr>
+                                <th>${data.id}</th>
+                                <th>${name}</th>
+                            </tr>
+                        `
+                        document.getElementById("message").innerHTML=`<h2 class=message-success>Tạo team thành công!!!</h2>`;
+                    }
+                    else {
+                        document.getElementById("message").innerHTML=`<h2 class=message-error>Tạo team thất bại!!! Lỗi: ${data.message}</h2>`;
+                    }
+                }); 
+            }); 
+            request.on('finish', () => { 
+                console.log('Request is Finished') 
+            }); 
+            request.on('abort', () => { 
+                console.log('Request is Aborted') 
+            }); 
+            request.on('error', (error) => { 
+                console.log(`ERROR: ${JSON.stringify(error)}`)
+                document.getElementById("message").innerHTML=`<h2 class=message-error>Tạo team thất bại!!!</h2>`;
+            }); 
+            request.on('close', (error) => { 
+                console.log('Last Transaction has occured') 
+            }); 
+            request.setHeader('Content-Type', 'application/json');
+            request.write(body, 'utf-8');
+            request.end(); 
+        })
+    }).catch((error) => {
+        console.log(error)
+    });
+    </script>
+</body>
+</html>

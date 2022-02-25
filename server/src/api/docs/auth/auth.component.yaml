@@ -1,0 +1,58 @@
+components:
+  schemas:
+    RegisterDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          maxLength: 50
+          example: Ricardo
+        lastName:
+          type: string
+          maxLength: 50
+          example: Milos
+        email:
+          type: string
+          maxLength: 100
+          format: email
+        phone:
+          type: string
+          example: '0949494949'
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          example: password
+
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+          example: password
+        remember:
+          type: boolean
+          example: true
+
+    AuthResponseDto:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#components/schemas/UserBasicDto'
+
+    ChangePasswordDto:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          example: oldpassword
+        newPassword:
+          type: string
+          example: newpassword

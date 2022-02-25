@@ -1,0 +1,128 @@
+components:
+  schemas:
+    TeamBasicDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: John
+        description:
+          type: string
+          example: Vip team pro s max super ultra legend
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
+
+    UserTeamDto:
+      type: object
+      properties:
+        role:
+          type: string
+          example: Member
+        isOwnder:
+          type: boolean
+          example: false
+        user:
+          $ref: '#components/schemas/UserBasicDto'
+
+    TeamExtendDto:
+      allOf:
+        - $ref: '#components/schemas/TeamBasicDto'
+        - type: object
+          properties:
+            userTeams:
+              type: array
+              items:
+                $ref: '#components/schemas/UserTeamDto'
+
+    PaginatedTeamsDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#components/schemas/TeamExtendDto'
+        meta:
+          $ref: '#components/schemas/PaginationMetaDto'
+
+    CreateTeamDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Team Vip
+        description:
+          type: string
+          example: 'Super team pro max s vip legend'
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+
+    UpdateTeamDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: Team Vip
+        description:
+          type: string
+          example: 'Super team pro max s vip legend'
+        avatar:
+          type: string
+          example: https://i.imgur.com/Bb5j7UY.jpg
+
+    ChangeTeamStatusDto:
+      type: object
+      properties:
+        isActive:
+          type: boolean
+
+    AddUserToTeamDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7
+        role:
+          type: string
+          example: Member
+        isOwner:
+          type: boolean
+          example: false
+
+    UpdateUserInTeamDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7
+        role:
+          type: string
+          example: Member
+        isOwner:
+          type: boolean
+          example: false
+
+    DeleteUserInTeamDto:
+      type: object
+      properties:
+        userId:
+          type: number
+          example: 7

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Project Manager : Made by 411.Lib</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <title>Project Manager</title>
+  </head>
+  <body>
+    <a class="signin-label" >
+      <img src="image/doge.png" class="logo-signin-page">
+    </a>
+    <h1 class="title">Login</h1>
+    <form class="form" name="form" method="POST">
+      <div>
+        <label for="username" style="margin-right: 7px"><i class="fa fa-user" style="font-size:24px; color:rgb(170, 142, 142);"></i></label>
+        <input type="text" required="username" name="username" id="username" placeholder="Insert your username"><br>
+      </div>
+      <div>
+        <label for="password"><i class="fa fa-key" style="font-size:24px; color: rgb(170, 142, 142);"></i></label>
+        <input type="password" required="password" name="password" id="password" placeholder="Insert your password"><br>
+      </div>
+      <input style="margin-top: 5px;" id="login" type="submit" value="Login">
+      <input style="margin-top: 5px;" id="register" type="submit" value="Register">
+    </form>
+    <!-- <div class="guest-login" >
+      <button onclick="window.location.href='login.html';">Login as Guest</button>
+    </div> -->
+    <div id="message"></div>
+    <script>
+      const {ipcRenderer} = require("electron");
+      const electron = require("electron");
+      const net=electron.remote.net;
+      //Login API
+      document.getElementById("login").addEventListener("click", function (e){
+        e.preventDefault();
+        var user={
+          username: document.forms['form']['username'].value,
+          password: document.forms['form']['password'].value
+        }
+        var body=JSON.stringify(user);
+        const request=net.request({
+          method:"POST",
+          url:"http://localhost:4000/backend/users/login",
+          redirect:"follow"
+        });
+        request.on('response', (response) => { 
+          console.log(`STATUS: ${response.statusCode}`); 
+          console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
+          response.on('data', (chunk) => { 
+            console.log(`BODY: ${chunk}`);
+            let token = JSON.parse(chunk)["access-token"];
+            if (response.statusCode==200) {
+              ipcRenderer.send("accessToken",token);
+            }
+            else {
+              document.getElementById("message").innerHTML=`<h2 class="message-error">Đăng nhập thất bại !!!</h2>`
+            }
+          }); 
+        }); 
+        request.on('finish', () => { 
+          console.log('Request is Finished') 
+        }); 
+        request.on('abort', () => { 
+          console.log('Request is Aborted') 
+        }); 
+        request.on('error', (error) => { 
+          console.log(`ERROR: ${JSON.stringify(error)}`)
+        }); 
+        request.on('close', (error) => { 
+          console.log('Last Transaction has occured') 
+        }); 
+        request.setHeader('Content-Type', 'application/json'); 
+        request.write(body, 'utf-8'); 
+        request.end(); 
+      })
+      //Go to register page
+      document.getElementById("register").addEventListener("click",function(){
+        ipcRenderer.send("registerPage");
+      });
+    </script>
+  </body>
+</html>
