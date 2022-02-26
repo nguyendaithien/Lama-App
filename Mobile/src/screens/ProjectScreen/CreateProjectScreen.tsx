@@ -1,27 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Layout,
   Text,
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
-  Input,
-  OverflowMenu,
-  MenuItem,
   Button,
   Spinner,
   Modal,
   Card,
-  IndexPath,
-  Select,
   Datepicker
 } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native';
 import {
   MessageIcon,
   BackIcon,
-  TeamIcon,
   IncomeIcon,
   CalendarIcon,
   ProjectIcon
@@ -50,16 +43,12 @@ export const CreateProjectScreen = () => {
   const [projectEndTime, setProjectEndTime] = React.useState<Date | null>();
 
   const [modalStatus, setModalStatus] = useState<boolean>(false);
-  const [isShowingError, setIsShowingError] = useState(false);
 
   //handle funt
   const navigateBack = () => {
     navigationPassID.goBack();
   };
   async function getFetchCreateProject() {
-    // const startTime = moment(projectStartTime).format('DD/MM/YYYY').toString();
-    // const endTime = moment(projectEndTime).format('DD/MM/YYYY').toString();
-    // console.log(startTime);
     try {
       await dispatch(
         fetchCreateNewProject({
@@ -72,10 +61,6 @@ export const CreateProjectScreen = () => {
       );
       setModalStatus(true);
       fetchCreateNewProjectMsg === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
-      setIsShowingError(true);
-      setTimeout(() => {
-        setIsShowingError(false);
-      }, 6000);
     } catch (error) {
       console.log(error);
     }

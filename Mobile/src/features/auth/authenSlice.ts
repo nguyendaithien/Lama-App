@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '@src/configs/redux/store';
 import authenApi from './authenApi';
-import { ILoginBody, IChangePasswordBody } from '@src/models/auth';
+import { ILoginBody, IChangePasswordBody, IAuthRegister } from '@src/models/auth';
 import { getToken, setToken, clearToken } from '@src/utils/tokenUtil';
-import { IUser, IUserBodyRequest } from '@src/models/user';
+import { IUser } from '@src/models/user';
 import MESSAGES from '@src/configs/constant/messages';
 
 export interface IAuthenState {
@@ -14,14 +14,11 @@ export interface IAuthenState {
   isFetchingLogin: boolean;
   fetchLoginMsg: any;
 
+  isFetchingRegister: boolean;
+  fetchRegisterMsg: any;
+
   isFetchingChangePassword: boolean;
   fetchChangePasswordMsg: any;
-
-  isFetchingGetInfo: boolean;
-  fetchGetInfoMsg: any;
-
-  isFetchingUpdateUserInfo: boolean;
-  fetchUpdateUserInfoMsg: any;
 
   isLoggingout: boolean;
 }
@@ -39,16 +36,12 @@ const initialState: IAuthenState = {
   isFetchingChangePassword: false,
   fetchChangePasswordMsg: null,
 
-  // state for get info reducer
-  isFetchingGetInfo: false,
-  fetchGetInfoMsg: null,
-
-  // state for update user info reducer
-  isFetchingUpdateUserInfo: false,
-  fetchUpdateUserInfoMsg: null,
-
   //logout
-  isLoggingout: false
+  isLoggingout: false,
+
+  //register
+  isFetchingRegister: false,
+  fetchRegisterMsg: null
 };
 
 export const fetchLogin = createAsyncThunk(
@@ -63,39 +56,24 @@ export const fetchLogin = createAsyncThunk(
   }
 );
 
+export const fetchRegister = createAsyncThunk(
+  'auth/fetchRegister',
+  async (payload: IAuthRegister, { rejectWithValue }) => {
+    try {
+      const response = await authenApi.register(payload);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error?.response?.data?.message || error?.response || error);
+    }
+  }
+);
+
 export const fetchChangePassword = createAsyncThunk(
   'auth/fetchChangePassword',
   async (payload: IChangePasswordBody, { rejectWithValue }) => {
     try {
       const token = await getToken();
       const response = await authenApi.changePassword(token, payload);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error?.response?.data?.message || error?.response || error);
-    }
-  }
-);
-
-export const fetchGetInfo = createAsyncThunk(
-  'auth/fetchGetInfo',
-  async (payload: any | null, { rejectWithValue }) => {
-    try {
-      const token = await getToken();
-      // console.log(token);
-      const response = await authenApi.getInformation(token);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error?.response?.data?.message || error?.response || error);
-    }
-  }
-);
-
-export const fetchUpdateUserInfo = createAsyncThunk(
-  'auth/fetchUpdateUserInfo',
-  async (payload: IUserBodyRequest, { rejectWithValue }) => {
-    try {
-      const token = await getToken();
-      const response = await authenApi.updateUserInfo(token, payload);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error?.response?.data?.message || error?.response || error);
@@ -151,6 +129,20 @@ export const authenSlice = createSlice({
         state.isAlreadyLogin = true;
       })
 
+      //handle register
+      .addCase(fetchRegister.rejected, (state, action) => {
+        state.isFetchingRegister = false;
+        state.fetchRegisterMsg = action.payload || action.error.message;
+      })
+      .addCase(fetchRegister.pending, state => {
+        state.isFetchingRegister = true;
+        state.fetchRegisterMsg = null;
+      })
+      .addCase(fetchRegister.fulfilled, (state, action) => {
+        state.isFetchingRegister = false;
+        state.fetchRegisterMsg = MESSAGES.REGISTER_SUCCESS;
+      })
+
       // Handle fetch change password
       .addCase(fetchChangePassword.rejected, (state, action) => {
         state.isFetchingChangePassword = false;
@@ -163,37 +155,6 @@ export const authenSlice = createSlice({
       .addCase(fetchChangePassword.fulfilled, state => {
         state.fetchChangePasswordMsg = MESSAGES.UPDATE_SUCCESS;
         state.isFetchingChangePassword = false;
-      })
-
-      // Handle fetch get info
-      .addCase(fetchGetInfo.rejected, (state, action) => {
-        state.userInfo = {};
-        state.isFetchingGetInfo = false;
-        state.fetchGetInfoMsg = action.payload || action.error.message;
-      })
-      .addCase(fetchGetInfo.pending, state => {
-        state.isFetchingGetInfo = true;
-        state.fetchGetInfoMsg = null;
-      })
-      .addCase(fetchGetInfo.fulfilled, (state, action) => {
-        state.isFetchingGetInfo = false;
-        state.fetchGetInfoMsg = null;
-        state.userInfo = action.payload.userInfor;
-      })
-
-      // Handle fetch update info
-      .addCase(fetchUpdateUserInfo.rejected, (state, action) => {
-        state.isFetchingUpdateUserInfo = false;
-        state.fetchUpdateUserInfoMsg = action.payload || action.error.message;
-      })
-      .addCase(fetchUpdateUserInfo.pending, state => {
-        state.isFetchingUpdateUserInfo = true;
-        state.fetchUpdateUserInfoMsg = null;
-      })
-      .addCase(fetchUpdateUserInfo.fulfilled, (state, action) => {
-        state.isFetchingUpdateUserInfo = false;
-        state.fetchUpdateUserInfoMsg = MESSAGES.UPDATE_SUCCESS;
-        state.userInfo = action.payload.userInfor;
       })
 
       // Handle fetch logout
@@ -214,8 +175,6 @@ export const authenSlice = createSlice({
 export const { logout, changeStateAlreadyLogin } = authenSlice.actions;
 
 export const selectIsAuth = (state: RootState) => state.auth.isAuth;
-
-export const selectUserInfo = (state: RootState) => state.auth.userInfo;
 
 export const selectIsFetchingGetDeviceByID = (state: RootState) => {
   return state.auth.isFetchingLogin;

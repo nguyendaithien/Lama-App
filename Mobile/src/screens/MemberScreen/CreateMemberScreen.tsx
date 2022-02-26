@@ -1,32 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Layout,
   Text,
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
-  Input,
-  OverflowMenu,
-  MenuItem,
   Button,
   Spinner,
   Modal,
   Card
 } from '@ui-kitten/components';
 import { StyleSheet } from 'react-native';
-import { EditIcon, PersonIcon, BackIcon, EmailIcon, PhoneIcon } from '@src/components/Icons';
+import { PersonIcon, BackIcon, EmailIcon, PhoneIcon } from '@src/components/Icons';
 import InputText from '@src/components/InputText';
-import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
-import {
-  fetchGetUserInforByID,
-  fetchGetUsers,
-  fetchCreateNewUser
-} from '@src/features/user/userSlice';
+import { fetchCreateNewUser } from '@src/features/user/userSlice';
 import MESSAGES from '@src/configs/constant/messages';
 
 export const CreateMemberScreen = () => {
@@ -75,14 +66,6 @@ export const CreateMemberScreen = () => {
   }
   const handleDetectFullFill = () => {
     return firstName && lastName && email && phoneNumber ? true : false;
-  };
-
-  const HandleShowError = () => {
-    return (
-      <Layout style={{ alignItems: 'center', marginVertical: 10 }}>
-        <Text style={{ fontStyle: 'italic' }} status={'danger'}>{`${fetchCreateNewUserMsg}`}</Text>
-      </Layout>
-    );
   };
 
   const handleCleanPlaceHolder = () => {

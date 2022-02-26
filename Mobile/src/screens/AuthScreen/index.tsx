@@ -12,7 +12,6 @@ import {
 } from '@ui-kitten/components';
 import { KeyboardAvoidingView } from '@src/components/KeyboardAvoidingView';
 import InputText from '@src/components/InputText';
-// import { LinearLayout } from '@src/components/LinearLayout';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@src/navigations/Navigation';
@@ -21,11 +20,6 @@ import { fetchLogin, selectIsAuth } from '@src/features/auth/authenSlice';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import { ROUTES } from '@src/navigations/routes';
 import { useEffect } from 'react';
-
-interface IFormData {
-  username: string;
-  password: string;
-}
 
 const LogoImage = () => {
   return (
@@ -46,8 +40,7 @@ export const LoginScreen = () => {
   const dispatch = useAppDispatch();
   const loginMsg = useAppSelector(state => state.auth.fetchLoginMsg);
   const loading = useAppSelector(state => state.auth.isFetchingLogin);
-  // const loginMsg = 'Login Success';
-  // const loading = true;
+  const [isShowError, setIsShowError] = useState(false);
 
   useEffect(() => {
     console.log({ isAuth });
@@ -68,6 +61,10 @@ export const LoginScreen = () => {
 
   const handleLoginButton = async () => {
     dispatch(fetchLogin({ email: username, password: password, remember: true }));
+    setIsShowError(true);
+    setTimeout(() => {
+      setIsShowError(false);
+    }, 5000);
   };
 
   return (
@@ -106,13 +103,13 @@ export const LoginScreen = () => {
             <Text status="info">Forgot Password?</Text>
           </TouchableOpacity>
         </Layout>
-        {loginMsg && (
+        {isShowError && (
           <Text
             style={[styles.errorText, { display: loginMsg ? 'flex' : 'none' }]}
             status={'danger'}
             category="c1"
           >
-            {loginMsg}
+            {loginMsg?.toUpperCase()}
           </Text>
         )}
         <Layout style={{ alignItems: 'center', marginTop: 30 }}>
@@ -123,13 +120,7 @@ export const LoginScreen = () => {
       </Layout>
 
       <Layout style={styles.signInButton}>
-        <Button
-          style={styles.button}
-          onPress={handleLoginButton}
-          // onPress={() => navigation.navigate('Main')}
-          status="primary"
-          size="giant"
-        >
+        <Button style={styles.button} onPress={handleLoginButton} status="primary" size="giant">
           SIGN IN
         </Button>
         <Layout

@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Layout,
   Text,
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
-  Input,
-  OverflowMenu,
-  MenuItem,
   Button,
   Spinner,
   Modal,
@@ -17,28 +13,25 @@ import {
 import { StyleSheet } from 'react-native';
 import { MessageIcon, BackIcon, TeamIcon } from '@src/components/Icons';
 import InputText from '@src/components/InputText';
-import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import MESSAGES from '@src/configs/constant/messages';
-import { fetchCreateNewTeam, selectCreateNewUserMsg } from '@src/features/team/teamSlice';
+import { fetchCreateNewTeam } from '@src/features/team/teamSlice';
 
 export const CreateTeamScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const dispatch = useAppDispatch();
-  //root state
-  // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
+
+  //ROOT STATE
   const isCreatingNewTeam = useAppSelector(state => state.user.isCreatingNewUser);
   const createNewTeamMsg = useAppSelector(state => state.team.fetchCreateNewTeamMsg);
 
-  // const fetchCreateNewUserMsg = useAppSelector(state => state.user.fetchCreateNewUserMsg);
-  //screen state
+  //SCREEN STATE
   const [modalStatus, setModalStatus] = useState<boolean>(false);
   const [teamName, setTeamName] = useState<string>('');
   const [teamDescription, setTeamDescription] = useState<string>('');
-  const [isShowingError, setIsShowingError] = useState(false);
   const navigateBack = () => {
     navigationPassID.goBack();
   };
@@ -47,11 +40,6 @@ export const CreateTeamScreen = () => {
       await dispatch(fetchCreateNewTeam({ name: teamName, description: teamDescription }));
       setModalStatus(true);
       createNewTeamMsg === MESSAGES.CREATE_SUCCESS && handleCleanPlaceHolder();
-      setIsShowingError(true);
-      setTimeout(() => {
-        setIsShowingError(false);
-        // setCreateNewTeamMsg(null);
-      }, 6000);
     } catch (error) {
       console.log(error);
     }
@@ -77,21 +65,6 @@ export const CreateTeamScreen = () => {
 
   const handleDetectFullFill = () => {
     return teamName && teamDescription ? true : false;
-  };
-
-  const handleDetectEmptyInfor = () => {
-    return !teamName && !teamDescription ? true : false;
-  };
-  // const handleMessageCreate = () => {
-  //   setFetchCreateNewUserMsg(useAppSelector(state => state.user.fetchCreateNewUserMsg));
-  //   return;
-  // };
-  const HandleShowError = () => {
-    return (
-      <Layout style={{ alignItems: 'center', marginTop: 10 }}>
-        <Text style={{ fontStyle: 'italic' }} status={'danger'}>{`${createNewTeamMsg}`}</Text>
-      </Layout>
-    );
   };
 
   const handleCleanPlaceHolder = () => {
@@ -171,7 +144,6 @@ export const CreateTeamScreen = () => {
         {isCreatingNewTeam && <Spinner status="primary" />}
       </Layout>
       {handleDetectFullFill() && <SubmitBotton />}
-      {isShowingError && <HandleShowError />}
     </Layout>
   );
 };

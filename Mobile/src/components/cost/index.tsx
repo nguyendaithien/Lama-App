@@ -4,10 +4,7 @@ import { StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { IProjectCost, IProjectUser } from '@src/models/project';
 import { useAppDispatch } from '@src/hooks/reduxHooks';
 import { DeleteIcon } from '../Icons';
-import {
-  fetchRemoveCostFromProject,
-  fetchRemoveUserFromProject
-} from '@src/features/project/projectSlice';
+import { fetchRemoveCostFromProject } from '@src/features/project/projectSlice';
 
 interface IProjectCostPropsEdit {
   // teamID: number;

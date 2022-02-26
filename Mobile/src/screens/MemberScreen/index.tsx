@@ -14,15 +14,7 @@ import {
   SelectItem
 } from '@ui-kitten/components';
 import { StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
-import {
-  BellIcon,
-  FilterIcon,
-  PlusIcon,
-  SearchIcon,
-  ActiveIcon,
-  InactiveIcon,
-  PersonIcon
-} from '@src/components/Icons';
+import { BellIcon, FilterIcon, PlusIcon, SearchIcon } from '@src/components/Icons';
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
@@ -53,8 +45,8 @@ export const MemberScreen = () => {
   //SCREEN STATE
 
   //state query
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
+  const page = 1;
+  const limit = 100;
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<number | null>(null);
   const [status, setStatus] = useState<number | null>(null);
@@ -180,7 +172,6 @@ export const MemberScreen = () => {
               value={displayValueStatusFilter}
               onSelect={index => {
                 const indexSelect = index as IndexPath;
-                // console.log(index);
                 setSelectedIndexFilterStatus(indexSelect);
                 setStatus(indexSelect.row);
               }}

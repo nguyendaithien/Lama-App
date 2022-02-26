@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Text,
@@ -15,29 +15,15 @@ import {
 } from '@ui-kitten/components';
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { StyleSheet, ScrollView, RefreshControl, Alert, TouchableOpacity } from 'react-native';
 import {
-  StyleSheet,
-  SafeAreaView,
-  Image,
-  ScrollView,
-  RefreshControl,
-  Alert,
-  TouchableOpacity
-} from 'react-native';
-import {
-  BellIcon,
-  PhoneIcon,
-  MailIcon,
-  LocationIcon,
-  GenderIcon,
   BackIcon,
   EditIcon,
   SaveIcon,
   TeamIcon,
   MessageIcon,
-  ClockIcon,
   TeamLeaderIcon,
   PlusIcon,
   SearchIcon
@@ -48,19 +34,16 @@ import {
   fetchChangeTeamStatus,
   fetchDeleteTeam,
   fetchGetTeamDetail,
-  fetchGetTeams,
   fetchUpdateTeam,
   fetchUpdateUserFromTeam
 } from '@src/features/team/teamSlice';
 import InputText from '@src/components/InputText';
-import { ITeamHaveUsers } from '@src/models/team';
 import {
   MemberCardMini,
   MemberCardMiniAddUserToTeam,
   MemberCardMiniChangeLeader
 } from '@src/components/Member';
 import MESSAGES from '@src/configs/constant/messages';
-import { ROLE_MEMBER } from '@src/configs/constant/user';
 import { fetchGetUsers } from '@src/features/user/userSlice';
 
 export const TeamDetailScreen = () => {
@@ -89,7 +72,6 @@ export const TeamDetailScreen = () => {
   const [modalStatusAddUser, setModalStatusAddUser] = useState(false);
 
   const [search, setSearch] = useState('');
-  const [roleUserAdd, setroleUserAdd] = useState('Member');
 
   //handle funct
   const onCheckedChange = (isChecked: boolean) => {
@@ -152,8 +134,6 @@ export const TeamDetailScreen = () => {
               isOwner: true
             })
           );
-          // setModalStatusAddUser(true);
-          // setModalAddUser(false);
         }
       },
       {

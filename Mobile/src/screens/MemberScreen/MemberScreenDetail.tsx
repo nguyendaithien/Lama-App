@@ -12,22 +12,19 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StyleSheet, Image, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import {
   PhoneIcon,
-  // MailIcon,
   LocationIcon,
   TeamIcon,
   SaveIcon,
   BackIcon,
-  MessageIcon,
   ClockIcon,
   EditIcon,
   EmailIcon,
   PersonIcon
 } from '@src/components/Icons';
 import InputText from '@src/components/InputText';
-// import { DataInforRender } from '@src/components/Member';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import {
   fetchChangeStatusUser,
@@ -56,7 +53,6 @@ export const MemberDetailScreen = () => {
   const [email, setEmail] = useState(userInfor?.email);
   const [phone, setPhone] = useState(userInfor?.phone);
   const [activeStatus, setActiveStatus] = useState(userInfor?.isActive);
-  // const [selectedIndex, setSelectedIndex] = React.useState(0);
   const [selectedStatusActive, setSelectedStatusActive] = useState(false);
 
   const handleSetValueWhenFetch = useCallback(() => {

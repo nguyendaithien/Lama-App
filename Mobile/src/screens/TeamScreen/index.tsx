@@ -5,10 +5,7 @@ import {
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
   Input,
-  OverflowMenu,
-  MenuItem,
   Modal,
   Card,
   Button,
@@ -21,14 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
 import { ROUTES } from '@src/navigations/routes';
-import {
-  BellIcon,
-  FilterIcon,
-  PlusIcon,
-  SearchIcon,
-  ActiveIcon,
-  InactiveIcon
-} from '@src/components/Icons';
+import { BellIcon, FilterIcon, PlusIcon, SearchIcon } from '@src/components/Icons';
 import { TeamInforCard } from '@src/components/Team';
 import { useAppSelector, useAppDispatch } from '@src/hooks/reduxHooks';
 import { fetchGetTeams } from '@src/features/team/teamSlice';
@@ -47,8 +37,6 @@ export const TeamScreen = () => {
   const isFetching = useAppSelector(state => state.team.isFetchingGetTeams);
 
   //param state
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(100);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<number | null>(null);
   const [status, setStatus] = useState<number | null>(null);
@@ -83,7 +71,7 @@ export const TeamScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+          dispatch(fetchGetTeams({ page: 1, limit: 100, search }));
         }}
       >
         <SearchIcon fill="grey" style={styles.icon} />
@@ -114,20 +102,6 @@ export const TeamScreen = () => {
       </TouchableOpacity>
     );
   };
-  const RenderRightActions = () => {
-    return (
-      <Layout>
-        <OverflowMenu
-          anchor={FilterIconAction}
-          visible={filterVisible}
-          onBackdropPress={toggleFilter}
-        >
-          <MenuItem accessoryLeft={ActiveIcon} title="Active" />
-          <MenuItem accessoryLeft={InactiveIcon} title="Inactive" />
-        </OverflowMenu>
-      </Layout>
-    );
-  };
 
   //
   useEffect(() => {
@@ -136,9 +110,9 @@ export const TeamScreen = () => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+    dispatch(fetchGetTeams({ page: 1, limit: 100, search, sort: null, status: null }));
     !isFetching && setRefreshing(false);
-  }, [dispatch, page, limit, search, sort, status, isFetching]);
+  }, [dispatch, isFetching, search]);
   return (
     <Layout style={styles.container}>
       <TopNavigation alignment="center" title="Teams" accessoryRight={renderBellAction} />
@@ -201,7 +175,7 @@ export const TeamScreen = () => {
               style={{ marginTop: 5 }}
               onPress={() => {
                 setVisible(false);
-                dispatch(fetchGetTeams({ page, limit, search, sort, status }));
+                dispatch(fetchGetTeams({ page: 1, limit: 100, search, sort, status }));
               }}
             >
               SUBMIT
