@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Text,
@@ -7,18 +7,17 @@ import {
   Divider,
   useTheme,
   Avatar,
-  Toggle,
   Button,
   Modal,
   Card,
-  Input,
   Select,
   SelectItem,
-  IndexPath
+  IndexPath,
+  Datepicker
 } from '@ui-kitten/components';
 import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StyleSheet, ScrollView, RefreshControl, Alert, TouchableOpacity } from 'react-native';
 import {
@@ -27,26 +26,18 @@ import {
   SaveIcon,
   TeamIcon,
   MessageIcon,
-  ClockIcon,
-  TeamLeaderIcon,
   PlusIcon,
-  SearchIcon,
   IncomeIcon,
   PersonIcon,
-  CreditIcon
+  CreditIcon,
+  CalendarIcon
 } from '@src/components/Icons';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 
 import InputText from '@src/components/InputText';
-import {
-  MemberCardMini,
-  MemberCardMiniAddUserToTeam,
-  MemberCardMiniChangeLeader
-} from '@src/components/Member';
+
 import MESSAGES from '@src/configs/constant/messages';
-import { fetchGetUsers } from '@src/features/user/userSlice';
 import {
-  fetchAddUserToProject,
   fetchChangeProjectStatus,
   fetchDeleteProject,
   fetchGetProjectDetail,
@@ -56,12 +47,10 @@ import {
 } from '@src/features/project/projectSlice';
 import { ProjectStatus } from '@src/models/project';
 import { UserWithRemoveFromProject } from '@src/components/Member/UserProject';
-import { fetchUpdateUserFromTeam } from '@src/features/team/teamSlice';
 import { CostWithRemoveFromProject } from '@src/components/cost';
 
 export const ProjectDetailScreen = () => {
   const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RouteProp<RootStackParamListPassID>>();
   const dispatch = useAppDispatch();
   const theme = useTheme();
@@ -69,7 +58,6 @@ export const ProjectDetailScreen = () => {
 
   //ROOT STATE
   const projectDetail = useAppSelector(state => state.project.project);
-  const users = useAppSelector(state => state.user.users);
   const usersOfProject = projectDetail.userProjects;
   const costsOfProject = projectDetail.costs;
 
@@ -81,8 +69,9 @@ export const ProjectDetailScreen = () => {
   const [modalDeleteStatus, setModalDeleteStatus] = useState(false);
   const [projectIncome, setProjectIncome] = useState(projectDetail?.income);
   const [projectStatus, setProjectStatus] = useState<string | undefined>(projectDetail?.status);
-  const [projectStartTime, setProjectStartTime] = useState(projectDetail?.startTime);
-  const [projectEndTime, setProjectEndTime] = useState(projectDetail?.endTime);
+  const [projectStartTime, setProjectStartTime] = useState<Date | null>();
+  const [projectEndTime, setProjectEndTime] = useState<Date | null>();
+
   const [projectName, setProjectName] = useState(projectDetail?.name);
   const [projectDescription, setProjectDescription] = useState(projectDetail?.description);
   const [selectedProjectStatusIndex, setSelectedProjectStatusIndex] = React.useState(
@@ -136,7 +125,6 @@ export const ProjectDetailScreen = () => {
     role: string;
   }) => {
     setModalEditUserFromProject(true);
-    // console.log('hell');
     setUserIdUpdate(userId);
     setWageOfUserFromProject(wage);
     setRoleOfUserFromProject(role);
@@ -152,7 +140,6 @@ export const ProjectDetailScreen = () => {
     value: number;
   }) => {
     setModalEditCostFromProject(true);
-    // console.log('hell');
     setTitleOfCostFromProject(title);
     setCostIdUpdate(projectCostId);
     setValueOfCostFromProject(value);
@@ -243,8 +230,8 @@ export const ProjectDetailScreen = () => {
                 name: projectName,
                 description: projectDescription,
                 income: projectIncome,
-                startTime: projectStartTime,
-                endTime: projectEndTime
+                startTime: projectStartTime?.toISOString(),
+                endTime: projectEndTime?.toISOString()
               })
             );
           isEditProject &&
@@ -258,7 +245,6 @@ export const ProjectDetailScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          // setModalAddUser(true);
           handleAccessAddUserToProjectScreen(projectID);
         }}
       >
@@ -271,7 +257,6 @@ export const ProjectDetailScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => {
-          // setModalAddUser(true);
           handleAccessAddCostToProjectScreen(projectID);
         }}
       >
@@ -393,7 +378,6 @@ export const ProjectDetailScreen = () => {
               <ScrollView
                 nestedScrollEnabled
                 contentContainerStyle={{
-                  // maxHeight: 200,
                   backgroundColor: theme['color-primary-transparent-300'],
                   alignItems: 'center',
                   borderRadius: 10
@@ -456,15 +440,12 @@ export const ProjectDetailScreen = () => {
   //Initial Effect
   useEffect(() => {
     dispatch(fetchGetProjectDetail(projectID));
-    // dispatch(fetchGetUsers({ page: 1, limit: 100, search: projectSearchUser, sort: 2, status: 1 }));
   }, [dispatch, projectID]);
 
   useEffect(() => {
     setProjectName(projectDetail.name);
     setProjectDescription(projectDetail.description);
     setProjectIncome(projectDetail.income);
-    setProjectStartTime(projectDetail.startTime);
-    setProjectEndTime(projectDetail.endTime);
     setProjectStatus(projectDetail.status);
   }, [
     projectDetail.description,
@@ -524,12 +505,9 @@ export const ProjectDetailScreen = () => {
           {!isEditProject && (
             <Text style={{ marginTop: 10, paddingLeft: 10, fontWeight: 'bold' }}>
               Profit:{'  '}
-              {`${
-                handleFormatMoney(
-                  projectIncome ? projectIncome - handleTotalCosts() - handleTotalWageOfUser() : 0
-                )
-                // !!projectIncome && projectIncome - handleTotalCosts() - handleTotalWageOfUser()
-              }`}
+              {`${handleFormatMoney(
+                projectIncome ? projectIncome - handleTotalCosts() - handleTotalWageOfUser() : 0
+              )}`}
             </Text>
           )}
           {isEditProject && (
@@ -582,27 +560,52 @@ export const ProjectDetailScreen = () => {
             }}
             keyboardType="numeric"
           />
+          <Layout>
+            <Text style={{ paddingLeft: 10, marginTop: 15 }}>Start time: </Text>
 
+            <Datepicker
+              accessoryLeft={CalendarIcon}
+              date={projectStartTime}
+              onSelect={nextDate => {
+                console.log(nextDate);
+                console.log(projectStartTime);
+                setProjectStartTime(nextDate);
+              }}
+              min={new Date(2010, 1, 1)}
+              max={new Date(2050, 1, 1)}
+              placeholder="DD/MM/YYYY"
+            />
+          </Layout>
+          <Layout>
+            <Text style={{ paddingLeft: 10, marginTop: 15 }}>End time: </Text>
+
+            <Datepicker
+              accessoryLeft={CalendarIcon}
+              date={projectEndTime}
+              onSelect={date => {
+                console.log(date);
+                console.log(date?.toISOString());
+                setProjectEndTime(date);
+              }}
+              min={new Date(2010, 1, 1)}
+              max={new Date(2050, 1, 1)}
+              placeholder="DD/MM/YYYY"
+            />
+          </Layout>
           {!isEditProject && <UsersOfProjectComponent />}
           {!isEditProject && <CostsOfProjectComponent />}
           {isEditProject && (
             <>
               <Button
                 style={styles.deleteBtn}
-                // appearance="outline"
                 status="danger"
                 onPress={() => {
                   handleDeleteProjectWithAlert();
-                  // console.log('1');
                 }}
               >
                 DELETE PROJECT
               </Button>
-              <Modal
-                visible={modalDeleteStatus}
-                backdropStyle={styles.backdrop}
-                // onBackdropPress={() => setModalStatus(false)}
-              >
+              <Modal visible={modalDeleteStatus} backdropStyle={styles.backdrop}>
                 <Card disabled={true}>
                   <Layout style={{ alignItems: 'center' }}>
                     <Text style={{ marginBottom: 10 }}>{`${MESSAGES.DELETE_SUCCESS}`}</Text>

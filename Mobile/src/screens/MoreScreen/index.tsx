@@ -1,17 +1,17 @@
-import React from 'react';
-import { Pressable, SafeAreaView, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, Alert, TouchableOpacity } from 'react-native';
 import {
   Divider,
   Layout,
   StyleService,
   Toggle,
   TopNavigation,
-  useStyleSheet,
   useTheme,
   Text,
-  TopNavigationAction
+  TopNavigationAction,
+  Modal,
+  Card
 } from '@ui-kitten/components';
-// import { BackIcon } from '@src/components/Icons';
 import { useNavigation } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '@src/navigations/Navigation';
@@ -26,6 +26,8 @@ export const MoreScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const theme = useTheme();
 
+  const [modalInforOfAppStatus, setModalInforOfAppStatus] = useState(false);
+  const [modalHelpOfAppStatus, setModalHelpOfAppStatus] = useState(false);
   const borderBottomColor = { borderBottomColor: theme['color-primary-default'] };
   const isDarkTheme = useAppSelector(selectThemeType) === 'dark';
 
@@ -45,7 +47,36 @@ export const MoreScreen = () => {
         style: 'cancel'
       }
     ]);
-
+  const ModalInforOfAppComponents = () => {
+    return (
+      <Modal
+        visible={modalInforOfAppStatus}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setModalInforOfAppStatus(false)}
+      >
+        <Card>
+          <Text>Name: Project management</Text>
+          <Text>Version: 1.0</Text>
+        </Card>
+      </Modal>
+    );
+  };
+  const ModalHelpOfAppComponents = () => {
+    return (
+      <Modal
+        visible={modalHelpOfAppStatus}
+        backdropStyle={styles.backdrop}
+        onBackdropPress={() => setModalHelpOfAppStatus(false)}
+      >
+        <Card>
+          <Layout style={{ alignItems: 'center' }}>
+            <Text>Product of 411 Lib Team- HUST</Text>
+          </Layout>
+          <Text>Contact: daobakhanhbk@gmail.com</Text>
+        </Card>
+      </Modal>
+    );
+  };
   return (
     <Layout style={{ flex: 1 }}>
       <TopNavigation title="More" alignment="center" accessoryRight={BellAction} />
@@ -56,7 +87,7 @@ export const MoreScreen = () => {
           onPress={handleToggleTheme}
           style={[styles.item, styles.toggleLayout, borderBottomColor]}
         >
-          <Text style={styles.text}>Màu chủ đạo</Text>
+          <Text style={styles.text}>Appearance</Text>
           <Toggle
             style={styles.toggle}
             checked={isDarkTheme}
@@ -66,28 +97,30 @@ export const MoreScreen = () => {
             {isDarkTheme ? 'Dark mode' : 'Light mode'}
           </Toggle>
         </Pressable>
-        <Pressable
+        <TouchableOpacity
           style={[styles.item, borderBottomColor]}
-          onPress={() => navigation.navigate(ROUTES.about)}
+          onPress={() => {
+            // navigation.navigate(ROUTES.about);
+            setModalInforOfAppStatus(true);
+          }}
         >
-          <Text style={styles.text}>Thông tin</Text>
-        </Pressable>
-        <Pressable
+          <Text style={styles.text}>Information</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           style={[styles.item, borderBottomColor]}
-          onPress={() => navigation.navigate(ROUTES.about)}
+          onPress={() => {
+            setModalHelpOfAppStatus(true);
+            // navigation.navigate(ROUTES.about);
+          }}
         >
-          <Text style={styles.text}>Liên hệ & Hỗ trợ</Text>
-        </Pressable>
-        {/* <Pressable
-          style={[styles.item, borderBottomColor]}
-          onPress={() => navigation.navigate(ROUTES.changePassword)}
-        >
-          <Text style={styles.text}>Đổi mật khẩu</Text>
-        </Pressable> */}
+          <Text style={styles.text}>Help</Text>
+        </TouchableOpacity>
 
         <Pressable style={[styles.item, borderBottomColor]} onPress={createLogoutAlert}>
-          <Text style={styles.text}>Đăng xuất</Text>
+          <Text style={styles.text}>Sign out</Text>
         </Pressable>
+        <ModalInforOfAppComponents />
+        <ModalHelpOfAppComponents />
       </Layout>
     </Layout>
   );
@@ -111,6 +144,9 @@ const styles = StyleService.create({
   },
   toggle: {
     width: 100
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   text: {
     fontSize: 20,

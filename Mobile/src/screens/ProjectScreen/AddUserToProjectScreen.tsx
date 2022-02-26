@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Layout,
   Text,
@@ -6,45 +6,21 @@ import {
   TopNavigationAction,
   Divider,
   useTheme,
-  Avatar,
-  Toggle,
   Button,
   Modal,
   Card,
   Input,
-  Select,
-  SelectItem,
-  IndexPath,
   Spinner
 } from '@ui-kitten/components';
-import { ROUTES } from '@src/navigations/routes';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamListPassID } from '@src/navigations/Navigation';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { StyleSheet, ScrollView, RefreshControl, Alert, TouchableOpacity } from 'react-native';
-import {
-  BackIcon,
-  EditIcon,
-  SaveIcon,
-  TeamIcon,
-  MessageIcon,
-  ClockIcon,
-  TeamLeaderIcon,
-  PlusIcon,
-  SearchIcon,
-  IncomeIcon,
-  PersonIcon,
-  CreditIcon
-} from '@src/components/Icons';
+import { StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { BackIcon, SearchIcon, PersonIcon, CreditIcon } from '@src/components/Icons';
 import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 
 import InputText from '@src/components/InputText';
-import {
-  MemberCardMini,
-  MemberCardMiniAddUserToProject,
-  MemberCardMiniAddUserToTeam,
-  MemberCardMiniChangeLeader
-} from '@src/components/Member';
+import { MemberCardMiniAddUserToProject } from '@src/components/Member';
 import MESSAGES from '@src/configs/constant/messages';
 import { fetchGetUsers } from '@src/features/user/userSlice';
 import { fetchAddUserToProject, fetchGetProjectDetail } from '@src/features/project/projectSlice';

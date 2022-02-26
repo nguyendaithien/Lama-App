@@ -7,6 +7,7 @@ export default Object.assign(
     ADD_SUCCESS: 'Add successful',
     CONFIRM_SUCCESS: 'Confirm successful',
     SEND_SUCCESS: 'Send successful',
+    REGISTER_SUCCESS: 'Register successful',
 
     CREATE_FAIL: 'Create fail',
     UPDATE_FAIL: 'Update fail',
@@ -14,6 +15,7 @@ export default Object.assign(
     ADD_FAIL: 'Add fail',
     CONFIRM_FAIL: 'Confirm fail',
     SEND_FAIL: 'Send fail',
+    REGISTER_FAIL: 'Register FAIL',
 
     AGREE: 'Agree',
     YES: 'Yes',

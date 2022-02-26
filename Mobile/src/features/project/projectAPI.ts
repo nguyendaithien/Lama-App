@@ -12,7 +12,6 @@ import {
   IProjectUpdateUser
 } from '@src/models/project';
 import { axiosRequest, cleanObject } from '@src/utils/requestServerUtil';
-import { ImagePropTypes } from 'react-native';
 
 class ProjectApi {
   projectApiEndpoint: string;

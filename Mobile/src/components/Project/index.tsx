@@ -1,9 +1,7 @@
 import { StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Text, useTheme } from '@ui-kitten/components';
 import React from 'react';
-import { ITeam } from '@src/models/team';
 import { Layout } from '@ui-kitten/components';
-import { activeStatusCard, inActiveStatusCard } from '@src/theme/customTheme';
 import { IProject, EProjectStatus } from '@src/models/project';
 interface IProjectInforCardProps {
   onPress: (id: number) => void;

@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '@src/configs/redux/store';
 import { getToken } from '@src/utils/tokenUtil';
-import ProjectApi from './projectAPI';
 import MESSAGES from '@src/configs/constant/messages';
 import {
   IProject,

@@ -5,35 +5,16 @@ import {
   TopNavigation,
   TopNavigationAction,
   Divider,
-  useTheme,
-  Input,
-  OverflowMenu,
-  MenuItem,
-  Modal,
-  Button,
-  Select,
-  Card,
-  IndexPath,
-  SelectItem
+  useTheme
 } from '@ui-kitten/components';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
-  RefreshControl
-} from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList, RootStackParamListPassID } from '@src/navigations/Navigation';
+import { RootStackParamList } from '@src/navigations/Navigation';
 import { ROUTES } from '@src/navigations/routes';
 import {
   BellIcon,
-  FilterIcon,
-  PlusIcon,
-  SearchIcon,
   ActiveIcon,
-  TeamIcon,
   InactiveIcon,
   CompletedIcon,
   InprogressIcon,
@@ -43,10 +24,9 @@ import { useAppDispatch, useAppSelector } from '@src/hooks/reduxHooks';
 import { fetchGetProjects } from '@src/features/project/projectSlice';
 import { fetchGetUsers } from '@src/features/user/userSlice';
 import { fetchGetTeams } from '@src/features/team/teamSlice';
-import { EProjectStatus, ProjectStatus } from '@src/models/project';
+import { EProjectStatus } from '@src/models/project';
 
 export const HomeScreen = () => {
-  const navigationPassID = useNavigation<NativeStackNavigationProp<RootStackParamListPassID>>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
   const theme = useTheme();
