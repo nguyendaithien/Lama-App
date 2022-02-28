@@ -560,38 +560,43 @@ export const ProjectDetailScreen = () => {
             }}
             keyboardType="numeric"
           />
-          <Layout>
-            <Text style={{ paddingLeft: 10, marginTop: 15 }}>Start time: </Text>
 
-            <Datepicker
-              accessoryLeft={CalendarIcon}
-              date={projectStartTime}
-              onSelect={nextDate => {
-                console.log(nextDate);
-                console.log(projectStartTime);
-                setProjectStartTime(nextDate);
-              }}
-              min={new Date(2010, 1, 1)}
-              max={new Date(2050, 1, 1)}
-              placeholder="DD/MM/YYYY"
-            />
-          </Layout>
-          <Layout>
-            <Text style={{ paddingLeft: 10, marginTop: 15 }}>End time: </Text>
+          {isEditProject && (
+            <>
+              <Layout>
+                <Text style={{ paddingLeft: 10, marginTop: 15 }}>End time: </Text>
 
-            <Datepicker
-              accessoryLeft={CalendarIcon}
-              date={projectEndTime}
-              onSelect={date => {
-                console.log(date);
-                console.log(date?.toISOString());
-                setProjectEndTime(date);
-              }}
-              min={new Date(2010, 1, 1)}
-              max={new Date(2050, 1, 1)}
-              placeholder="DD/MM/YYYY"
-            />
-          </Layout>
+                <Datepicker
+                  accessoryLeft={CalendarIcon}
+                  date={projectEndTime}
+                  onSelect={date => {
+                    console.log(date);
+                    console.log(date?.toISOString());
+                    setProjectEndTime(date);
+                  }}
+                  min={new Date(2010, 1, 1)}
+                  max={new Date(2050, 1, 1)}
+                  placeholder="DD/MM/YYYY"
+                />
+              </Layout>
+              <Layout>
+                <Text style={{ paddingLeft: 10, marginTop: 15 }}>Start time: </Text>
+
+                <Datepicker
+                  accessoryLeft={CalendarIcon}
+                  date={projectStartTime}
+                  onSelect={nextDate => {
+                    console.log(nextDate);
+                    console.log(projectStartTime);
+                    setProjectStartTime(nextDate);
+                  }}
+                  min={new Date(2010, 1, 1)}
+                  max={new Date(2050, 1, 1)}
+                  placeholder="DD/MM/YYYY"
+                />
+              </Layout>
+            </>
+          )}
           {!isEditProject && <UsersOfProjectComponent />}
           {!isEditProject && <CostsOfProjectComponent />}
           {isEditProject && (
