@@ -1,33 +1,35 @@
-# Boilerplate for NodeJs with Express, Typeorm, Mysql (using Typescript)
+# Mobile app of project
 
-This is a base source code for continue developing other project.
-
-This code still have some comments for explaination, remove them if not necessary.
-
-The entities current has: User. All of theme have only some sample fields and relations so I could write a fews API for Signin and Signup (containning some middlewares).
+This is mobile app of project. Admins can do everything with this app
 
 ---
 
 ## Main tech
 
 - `Node.js` with `npm`, `yarn` for dependencies management.
+- `React Native` (also known as RN) is a popular JavaScript-based mobile app framework that allows you to build natively-rendered mobile apps for iOS and Android.
+- `Typescript` language (support build to js files with absolute path)
+- `Redux` is a pattern and library for managing and updating application state, using events called "actions". With combo:
+  - `Redux Toolkit`
+  - `Redux persist`
+  - `RN-async-storage`
 
 ---
 
 ## Development
 
-### Clone repository
+### Access folder Mobile
 
 ```
-git clone git@github.com:gerpann/gerpan-express-typeorm-boilerplate.git
+cd Mobile
 ```
 
 ### Prepare
 
-I used `node` version `14.17.0` (The `lts` version at the time I write this), but you can also install other `lts` version
+I used `node` version `14.17.4` (The `lts` version at the time I write this), but you can also install other `lts` version
 
 ```
-nvm install 14.9.0
+nvm install 14.17.4
 ```
 
 or
@@ -42,47 +44,29 @@ I _recommend_ you to install `yarn` at global scope before install dependencies 
 npm install -g yarn
 ```
 
-The first time, you will need to run this script to install dependencies.
-`
+### Setting up the development environment to build app
 
-````
+I _recommend_ you use `React Native CLI`
+
+Try link below to setup:
+https://reactnative.dev/docs/environment-setup
+
+Then, you will need to run this script to install dependencies.
+
+```
 yarn
 ```
 
-For run with database (I used Mysql), you can config it in `.env` file and some files in folder `src/config`.
-
-Normally, you have to create a schema before run any code relate with database.
-
-**Script to build source code to JS:**
-
-```
-yarn build
-```
-
-**Then just start the server wit**
+Build and connect with Metro
 
 ```
 yarn start
 ```
 
-_To see some other scripts you can open file `package.json` for detail._
-
----
-
-## Generate tables for new (empty) schema
-
-- Make sure your schema has just been created or does not have any tables.
-- Next, open file `package.json` and find in the script `migration:generate` where `-n Gerpan` and replace them with your favourite name (don't think too much because this just for make migrations data)
-- Then run script following script to generate script for create table in the future
+Turn on Android device simulator
 
 ```
-yarn migration:generate
+yarn android
 ```
 
-- After the previous step, you will see a file have name like `1625156147394-XXX.ts` (timestamp-yourname.ts), it contains data to make tables for schema.
-- Finally, run the below script to apply this to your schema.
-
-```
-yarn migration:run
-```
-````
+For run with database (I used Mysql), you can config it in `.env` file
