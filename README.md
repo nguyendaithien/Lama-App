@@ -1,5 +1,5 @@
 # Project management
-
+Lama -Laboratory management
 This is my project for Laboratory to manager projects, teams, members...
 Team admins can create, edit, delete, find (by name of filter), access detail of project, team, member...
 
